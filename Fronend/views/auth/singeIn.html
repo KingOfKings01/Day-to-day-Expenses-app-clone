@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Day-to-day Expenses</title>
-    <link rel="stylesheet" href="../Public/css/auth.css">
+    <link rel="stylesheet" href="../../Public/css/auth.css">
   </head>
   <body>
     <div id="alert-box">
@@ -12,7 +12,7 @@
     </div>
     <div class="containers">
       <h1 class="title">Sing In</h1>
-      <form onsubmit="handleSingeIn(event)" method="post" class="form-controller">
+      <form onsubmit="handleAuthorization(event)" method="post" class="form-controller">
         <div class="input-controller">
           <label for="username">Username:</label>
           <input type="text" id="username" name="username" required />
@@ -30,7 +30,7 @@
       <div class="centered">Already have an acount? <a href="./login.html">Login</a></div> 
     </div>
 
-    <script src="../Public/js/singeIn.js"></script>
+    <script src="../../Public/js/authorization.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   </body>
 </html>

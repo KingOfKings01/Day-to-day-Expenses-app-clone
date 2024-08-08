@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const {User} = require("../models/Relation");
 // import { Op } from 'sequelize';
 
 // Create a new User
@@ -21,8 +21,8 @@ exports.createUser = async (req, res) => {
 
     if (existingUser) {
       return res
-        .status(400)
-        .json({ message: "Username or email already exists" });
+        .status(409)
+        .json({ message: "Email already exists" });
     } else {
       const user = await User.create(data);
       res.status(201).json(user);
@@ -70,7 +70,7 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: "User not authorized" });
     }
 
-    return res.status(200).json({message: "User login successful"});
+    return res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }

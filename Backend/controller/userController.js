@@ -1,18 +1,34 @@
 const User = require("../models/User");
+// import { Op } from 'sequelize';
 
 // Create a new User
 exports.createUser = async (req, res) => {
   try {
-    const data = {
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-    };
-    const user = await User.create(data);
+    const { username, email, password } = req.body;
 
-    res.status(201).json(user);
+    const data = {
+      username,
+      email,
+      password,
+    };
+
+    // Check if the username or email already exists
+    const existingUser = await User.findOne({
+      where: {
+        email: email
+      },
+    });
+
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "Username or email already exists" });
+    } else {
+      const user = await User.create(data);
+      res.status(201).json(user);
+    }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -33,7 +49,7 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    await user.destroy(); //* "User.destroy()" to delete the User
+    await user.destroy();
     res.json({ message: "User deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });

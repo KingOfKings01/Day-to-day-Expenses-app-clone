@@ -1,4 +1,4 @@
-async function handleLogin(event) {
+async function handleSingeIn(event) {
   event.preventDefault();
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
@@ -10,6 +10,11 @@ async function handleLogin(event) {
   const data = { username, email, password };
   try {
     const response = await axios.post("http://localhost:4000/api/user", data);
+
+    localStorage.setItem('username', response.data.username);
+
+    window.location.href = '../success.html';
+   
   } catch (err) {
     const status = err?.response?.status;
     switch (status) {

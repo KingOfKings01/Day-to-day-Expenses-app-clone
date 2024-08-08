@@ -15,7 +15,7 @@ exports.createUser = async (req, res) => {
     // Check if the username or email already exists
     const existingUser = await User.findOne({
       where: {
-        email: email
+        email: email,
       },
     });
 
@@ -53,5 +53,25 @@ exports.deleteUser = async (req, res) => {
     res.json({ message: "User deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ message: "User not exit" });
+    }
+
+    if (!(await user.comparePassword(password))) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -1,8 +1,37 @@
-const { User, Order } = require("../models/Relation");
+const { User, Order, Expense } = require("../models/Relation");
 const jwt = require("jsonwebtoken");
 const Razorpay = require("razorpay");
 
-// import { Op } from 'sequelize';
+const sequelize = require("sequelize");
+
+exports.verifyToken = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Authorization token is missing" });
+    }
+
+    const decoded = User.verifyToken(token);
+
+    if (!decoded) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
+    const user = await User.findByPk(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    req.user = user; // Attach user object to request
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 // Create a new User
 exports.createUser = async (req, res) => {
@@ -58,75 +87,49 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-// Protected route example using verifyToken
+// Protected route example using verifyToken middleware
 exports.protectedRoute = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-
-  const decoded = User.verifyToken(token);
-
-  if (!decoded) {
-    return res.status(401).json({ message: "Unauthorized access" });
+  try {
+    return res
+      .status(200)
+      .json({ username: req.user.username, isPremium: req.user.isPremium });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-
-  // Check if the user is premium
-  const user = await User.findByPk(decoded.id);
-
-  // Proceed with the decoded information
-  res.status(200).json({ username: decoded.username, isPremium: user.isPremium  });
 };
 
-
-// todo: order creation
+// Buy Premium (order creation)
 exports.buyPremium = async (req, res) => {
-  const key_id = process.env.razorpay_key_id
-  const key_secret = process.env.razorpay_key_secret
-  const dependencies ={
-    key_id,
-    key_secret
-  }
-  const razorpay = new Razorpay(dependencies);
-  const token = req.headers.authorization.split(" ")[1];
-  const decoded = User.verifyToken(token);
-  
-  if (!decoded) {
-    return res.status(401).json({ message: "Unauthorized access" });
-  }
-  
   try {
-    const user = await User.findByPk(decoded.id);
-  
+    const razorpay = new Razorpay({
+      key_id: process.env.razorpay_key_id,
+      key_secret: process.env.razorpay_key_secret,
+    });
+
     const options = {
-      amount: 50000, // Amount in paise (e.g., 500 INR)
+      amount: 500 * 100, // Amount in Paise (e.g., 500 INR)
       currency: "INR",
-      receipt: "order_rcptid_11",
+      receipt: `order_rcptid_${req.user.id}_${Date.now()}`,
     };
 
-    const userData = {
-      username: user.username,
-      email: user.email,
-      key_id,
-    };
-    
     const order = await razorpay.orders.create(options);
-    
-    // console.log("object2");
-    //todo: store the order
-    const got = await user.createOrder({order_id: order.id})
-    console.log(user?.createOrder);
-    console.table(got);
+    await req.user.createOrder({ order_id: order.id });
 
-
-    res.json({ order, user: userData });
+    return res
+      .status(200)
+      .json({
+        order,
+        user: { username: req.user.username, email: req.user.email },
+      });
   } catch (error) {
-    res.status(500).send("Error creating order");
+    return res.status(500).json({ message: "Error creating order" });
   }
 };
 
 exports.updateOrder = async (req, res) => {
   const { order_id, status } = req.body;
- try{
-  const order = await Order.findOne({ where: { order_id } });
+  try {
+    const order = await Order.findOne({ where: { order_id } });
 
     if (order) {
       // Update the order's status
@@ -138,10 +141,31 @@ exports.updateOrder = async (req, res) => {
         user.isPremium = true; // Set isPremium to true
         await user.save();
       }
-    } 
-
+    }
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
   res.json(req.body);
+};
+
+// leader board
+exports.getUsersWithTotalExpenses = async (req, res) => {
+  try {
+    const usersWithExpenses = await User.findAll({
+      attributes: [
+        'username',
+        [sequelize.fn('SUM', sequelize.col('Expenses.amount')), 'totalExpense']
+      ],
+      include: [{
+        model: Expense,
+        attributes: [],
+      }],
+      group: ['User.id'],
+      order: [[sequelize.literal('totalExpense'), 'DESC']], // Sort by totalExpense in descending order
+    });
+
+    res.status(200).json(usersWithExpenses);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
 };

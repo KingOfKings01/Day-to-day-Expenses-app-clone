@@ -10,9 +10,15 @@
   </head>
   <body>
     <div id="alert-box"></div>
-    <div id="premiumButton"><button onclick="buyPremium()">Buy premium membership</button></div>
+
+    <div id="premiumButton">
+      <button onclick="buyPremium()">Buy Premium Membership</button>
+    </div>
+    
     <div class="container">
-      <h3 id="welcome">Welcome, User!</h3>
+      <h3 id="welcome">Welcome</h3>
+
+      <div id="leader-board"></div>
 
       <form
         onsubmit="handleFormSubmit(event)"

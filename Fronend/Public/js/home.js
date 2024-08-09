@@ -14,8 +14,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     const { username, isPremium } = response.data;
 
+
+
     premiumButton(isPremium);
-    document.getElementById("welcome").innerText = `Welcome, ${username}!`;
+
     loadExpenses();
   }
 });
@@ -137,12 +139,12 @@ const buyPremium = async () => {
         );
 
         // User is premium user now
-        premiumButton(true)
+        premiumButton(true);
       },
       prefill: {
         name: user.username,
         email: user.email,
-        contact: '9999999999' // Omit the contact field if not available
+        contact: "9999999999", // Omit the contact field if not available
       },
       theme: {
         color: "#3399cc",
@@ -164,7 +166,6 @@ const buyPremium = async () => {
 
     const rzp1 = new Razorpay(options);
     rzp1.open();
-    
   } catch (error) {
     console.error("Error creating order:", error);
   }
@@ -187,8 +188,69 @@ function closeAlert() {
   alertBoxDiv.style.display = "none";
 }
 
-function premiumButton(isPremium) {
-  document.getElementById("premiumButton").style.display = isPremium
-    ? "none"
-    : "block";
+async function premiumButton(isPremium) {
+  // Handle premium button visibility
+  if (isPremium) {
+    document.getElementById("premiumButton").style.display = "none";
+    document.body.style.backgroundImage =
+      "linear-gradient(111.4deg, rgba(238,113,113,1) 1%, rgba(246,215,148,1) 58%)";
+
+    // Fetch and display leaderboard data
+    try {
+      const r = await axios.get("http://localhost:4000/user/leader-board");
+      const leaderBoard = r.data.map((user) => ({
+        username: user.username,
+        totalAmount: user.totalExpense,
+      }));
+      
+      // Generate HTML for leaderboard
+      let leaderBoardHTML = '';
+      leaderBoardHTML = leaderBoard.map(user => `
+        <tr>
+          <td>${user.username}</td>
+          <td>${user.totalAmount || "No expenses"}</td>
+        </tr>
+      `).join('');
+
+      // Update the leaderboard section in the DOM
+      document.getElementById("leader-board").innerHTML = `
+        <dialog id="modal">
+        <button onclick="closeModal()">Close</button>
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="leader-board-table">
+              ${leaderBoardHTML}
+            </tbody>
+          </table>
+        </dialog>
+        <button onclick="showLeaderBoard()">Show Leaderboard</button>
+      `;
+    } catch (error) {
+      console.error("Error fetching leaderboard data:", error);
+      // Optionally handle the error, e.g., show an error message to the user
+    }
+  } else {
+    document.getElementById("premiumButton").style.display = "block";
+    document.getElementById("leader-board").innerHTML = ''; // Clear leaderboard if not premium
+  }
+
+  // Set the welcome message
+  const message = isPremium ? "Thank you for being a Premium Member!" : "";
+  document.getElementById("welcome").innerText = `Welcome, ${username}! ${message}`;
+}
+
+
+function showLeaderBoard() {
+  const dialog = document.querySelector("#modal");
+  dialog.showModal();
+}
+
+function closeModal() {
+  const dialog = document.querySelector("#modal");
+  dialog.close();
 }

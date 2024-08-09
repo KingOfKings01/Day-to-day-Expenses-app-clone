@@ -10,13 +10,21 @@ body {
 }
 
 #premiumButton{
+  display: none;
     button{
+      position: fixed;
         width: 100%;
-        padding: 20px 0;
-        background: yellow;
+        padding: 10px 0;
+        /* background: hsla(60, 100%, 50%, 0.523); */
         outline: none;
-        border: 1px solid #000;
+        border: none;
         font-weight: 600;
+        cursor: pointer;
+
+        background-color: #4158D0;
+background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+color: #fff;
+
     }
 }
 

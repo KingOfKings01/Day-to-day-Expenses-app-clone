@@ -49,6 +49,7 @@ async function handleFormSubmit(event) {
       }
     );
     loadExpenses();
+    document.querySelector("#expenseForm").reset()
   } catch (err) {
     alert("Failed to add expense. Please try again.");
     console.error(err.message);
@@ -203,7 +204,7 @@ async function premiumButton(isPremium) {
       const r = await axios.get("http://localhost:4000/user/leader-board");
       const leaderBoard = r.data.map((user) => ({
         username: user.username,
-        totalAmount: user.totalExpense,
+        totalExpense: user.totalExpense,
       }));
 
       // Generate HTML for leaderboard
@@ -213,7 +214,7 @@ async function premiumButton(isPremium) {
           (user) => `
         <tr>
           <td>${user.username}</td>
-          <td>${user.totalAmount || "No expenses"}</td>
+          <td>${user.totalExpense || "No expenses"}</td>
         </tr>
       `
         )

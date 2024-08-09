@@ -154,14 +154,8 @@ exports.getUsersWithTotalExpenses = async (req, res) => {
     const usersWithExpenses = await User.findAll({
       attributes: [
         'username',
-        [sequelize.fn('SUM', sequelize.col('Expenses.amount')), 'totalExpense']
+        'totalExpense',  
       ],
-      include: [{
-        model: Expense,
-        attributes: [],
-      }],
-      group: ['User.id'],
-      order: [[sequelize.literal('totalExpense'), 'DESC']], // Sort by totalExpense in descending order
     });
 
     res.status(200).json(usersWithExpenses);

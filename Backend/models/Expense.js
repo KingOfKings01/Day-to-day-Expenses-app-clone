@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const User = require("./User");
 
 const Expense = sequelize.define("Expense", {
   id: {
@@ -16,6 +17,7 @@ const Expense = sequelize.define("Expense", {
     default: "food",
   },
   description: DataTypes.TEXT,
+
 });
 
 module.exports = Expense;

@@ -14,10 +14,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     const { username, isPremium } = response.data;
 
-
-
     premiumButton(isPremium);
 
+    // Set the welcome message
+    const message = isPremium ? "Thank you for being a Premium Member!" : "";
+    document.getElementById(
+      "welcome"
+    ).innerText = `Welcome, ${username}! ${message}`;
     loadExpenses();
   }
 });
@@ -202,25 +205,30 @@ async function premiumButton(isPremium) {
         username: user.username,
         totalAmount: user.totalExpense,
       }));
-      
+
       // Generate HTML for leaderboard
-      let leaderBoardHTML = '';
-      leaderBoardHTML = leaderBoard.map(user => `
+      let leaderBoardHTML = "";
+      leaderBoardHTML = leaderBoard
+        .map(
+          (user) => `
         <tr>
           <td>${user.username}</td>
           <td>${user.totalAmount || "No expenses"}</td>
         </tr>
-      `).join('');
+      `
+        )
+        .join("");
 
       // Update the leaderboard section in the DOM
       document.getElementById("leader-board").innerHTML = `
         <dialog id="modal">
-        <button onclick="closeModal()">Close</button>
+        <button onclick="closeModal()">×</button>
+        <h4>Leader Board</h4>
           <table>
             <thead>
               <tr>
-                <th>User</th>
-                <th>Amount</th>
+                <th>Users</th>
+                <th>Expenses</th>
               </tr>
             </thead>
             <tbody id="leader-board-table">
@@ -236,14 +244,9 @@ async function premiumButton(isPremium) {
     }
   } else {
     document.getElementById("premiumButton").style.display = "block";
-    document.getElementById("leader-board").innerHTML = ''; // Clear leaderboard if not premium
+    document.getElementById("leader-board").innerHTML = ""; // Clear leaderboard if not premium
   }
-
-  // Set the welcome message
-  const message = isPremium ? "Thank you for being a Premium Member!" : "";
-  document.getElementById("welcome").innerText = `Welcome, ${username}! ${message}`;
 }
-
 
 function showLeaderBoard() {
   const dialog = document.querySelector("#modal");

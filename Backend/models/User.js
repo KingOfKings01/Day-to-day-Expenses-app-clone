@@ -24,6 +24,10 @@ const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    isPremium: {
+      type: DataTypes.BOOLEAN,
+      default: false,
+    },
   },
   {
     hooks: {
@@ -46,23 +50,21 @@ User.prototype.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-
 // Add a class-level method to generate JWT
 User.generateToken = function (user) {
   return jwt.sign(
     { id: user.id, username: user.username },
     process.env.JWT_SECRET,
-    { expiresIn: '24h' }
+    { expiresIn: "24h" }
   );
 };
 
 // Add a class-level method to verify JWT
 User.verifyToken = function (token) {
   try {
-    
     const value = jwt?.verify(token, process.env.JWT_SECRET);
     // console.log(value);
-    return value
+    return value;
   } catch (error) {
     return null; // Handle token verification failure
   }

@@ -1,4 +1,5 @@
-const {User} = require("../models/Relation");
+const { User } = require("../models/Relation");
+const jwt = require("jsonwebtoken");
 // import { Op } from 'sequelize';
 
 // Create a new User
@@ -20,12 +21,15 @@ exports.createUser = async (req, res) => {
     });
 
     if (existingUser) {
-      return res
-        .status(409)
-        .json({ message: "Email already exists" });
+      return res.status(409).json({ message: "Email already exists" });
     } else {
       const user = await User.create(data);
-      res.status(201).json(user);
+
+      const token = User.generateToken({
+        id: user.id,
+        username: user.username,
+      });
+      res.status(200).json({ token });
     }
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
@@ -70,8 +74,23 @@ exports.loginUser = async (req, res) => {
       return res.status(401).json({ message: "User not authorized" });
     }
 
-    return res.status(200).json(user);
+    const token = User.generateToken({ id: user.id, username: user.username });
+    res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+// Protected route example using verifyToken
+exports.protectedRoute = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+
+  const decoded = User.verifyToken(token);
+
+  if (!decoded) {
+    return res.status(401).json({ message: "Unauthorized access" });
+  }
+
+  // Proceed with the decoded information
+  res.status(200).json({ username: decoded.username });
 };

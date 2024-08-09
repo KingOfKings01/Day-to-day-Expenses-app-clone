@@ -1,6 +1,7 @@
 const express = require("express");
 const sequelize = require("./config/database");
 const cors = require("cors");
+require("dotenv").config(); // Load environment variables
 
 const userRoutes = require("./routes/userRouter");
 const expenseRoutes = require("./routes/expenseRouter");
@@ -17,6 +18,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+const port = process.env.PORT || 4000;
+
+
 app.use("/user", userRoutes);
 app.use("/expense", expenseRoutes);
 
@@ -27,6 +31,6 @@ async function initializeDatabase() {
 initializeDatabase();
 
 //Todo: Start the server
-app.listen(4000, () => {
-  console.log("Server is running on port 4000");
+app.listen(port, () => {
+  console.log("Server is running on port", port);
 });

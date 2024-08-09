@@ -11,31 +11,36 @@ exports.createExpense = async (req, res) => {
       description,
     };
 
-    const userId = req.params.id;
-    const user = await User.findOne({ where: { id : userId } });
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = User.verifyToken(token);
+
+    const user = await User.findOne({ where: { id: decoded.id } });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const expense = await user.createExpense(data);
     console.log(expense);
-    
-    res.json(expense)
+
+    res.json(expense);
     //  await Expense.create(amount, description, category)
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-
-
 // Get all Expenses for a User
 
 exports.getExpenses = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await User.findOne({ where: { id : userId } });
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = User?.verifyToken(token);
+    
+    // console.log(decoded); 
+
+    const user = await User.findOne({ where: { id: decoded.id } });
+
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const expenses = await user?.getExpenses();
+    const expenses = await user.getExpenses();
     res.json(expenses);
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
@@ -46,7 +51,6 @@ exports.getExpenses = async (req, res) => {
 
 exports.deleteExpense = async (req, res) => {
   try {
-    console.log("object");
     const expenseId = req.params.id;
     const expense = await Expense.findByPk(expenseId);
     if (!expense) return res.status(404).json({ message: "Expense not found" });

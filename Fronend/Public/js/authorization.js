@@ -12,7 +12,7 @@ async function handleAuthorization(event) {
       "http://localhost:4000/user/" + endpoint,
       data
     );
-    success(response.data);
+    success(response.data.token);
   } catch (err) {
     const status = err?.response?.status;
     handleError(status);
@@ -53,8 +53,7 @@ function handleError(status) {
   }
 }
 
-function success({id, username}) {
-  const userData = { id, username };
-  localStorage.setItem("user", JSON.stringify(userData));
+function success(token) {
+  localStorage.setItem("token", JSON.stringify(token));
   window.location.href = "../../views/home.html";
 }

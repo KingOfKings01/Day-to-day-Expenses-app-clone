@@ -1,12 +1,20 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const id = user.id;
-  const username = user.username;
-  if (!username && !id) {
+  const token = JSON.parse(localStorage.getItem("token"));
+  if (!token) {
     window.location.href = "../views/auth/login.html";
   } else {
+    const response = await axios.post(
+      "http://localhost:4000/user/protected-route",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const username = response.data.username;
     document.getElementById("welcome").innerText = `Welcome, ${username}!`;
-    loadExpenses(id);
+    loadExpenses();
   }
 });
 
@@ -21,28 +29,48 @@ async function handleFormSubmit(event) {
     description: description.value,
   };
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  const id = user.id;
+  const token = JSON.parse(localStorage.getItem("token"));
 
   try {
     const response = await axios.post(
-      `http://localhost:4000/expense/${id}`,
-      data
+      `http://localhost:4000/expense/createExpense`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
-    loadExpenses(response.data.userId);
+    loadExpenses();
   } catch (err) {
     alert("Failed to add expense. Please try again.");
     console.error(err.message);
   }
 }
 
-async function loadExpenses(id) {
+async function loadExpenses() {
+  const token = JSON.parse(localStorage.getItem("token"));
+
   const table = document.getElementById("expensesTableBody");
   try {
-    const response = await axios.get(`http://localhost:4000/expense/${id}`);
+    const response = await axios.get(
+      `http://localhost:4000/expense/getExpenses`,
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     const expenses = response.data;
 
     let rows = "";
+    if (expenses.length == 0) {
+      rows = "<tr><td colspan='5'>No Expenses</td></tr>";
+      table.innerHTML = rows;
+      return; // exit the function early if no expenses found to avoid potential error
+    }
     expenses.forEach((expense) => {
       rows += `
       <tr>
@@ -56,17 +84,17 @@ async function loadExpenses(id) {
     });
     table.innerHTML = rows;
   } catch (err) {
-    alert("Failed to load expenses. Please try again.");
+    // alert("Failed to load expenses. Please try again.");
     console.error(err.message);
   }
 }
 
 async function deleteExpense(id) {
   try {
+    const token = JSON.parse(localStorage.getItem("token"));
+
     const response = await axios.delete(`http://localhost:4000/expense/${id}`);
-    const user = JSON.parse(localStorage.getItem("user"));
-    const userId = user.id;
-    loadExpenses(userId);
+    loadExpenses();
   } catch (err) {
     alert("Failed to delete expense. Please try again.");
     console.error(err.message);

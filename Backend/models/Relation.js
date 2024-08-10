@@ -13,9 +13,10 @@ Order.belongsTo(User, { foreignKey: "userId" })
 
 
 //Todo: Whenever an Expense is created, updated, or deleted, totalExpense is updated.
+//! This code is not working as expected. The parameters are missing.
 Expense.beforeCreate(async (expense) => {
     const user = await User.findByPk(expense.UserId);
-    console.log("USER: ",expense.UserId);
+    console.log("Expense: ",expense);
     if (user) {
       user.totalExpense += expense.amount;
       await user.save();

@@ -49,7 +49,7 @@ async function handleFormSubmit(event) {
       }
     );
     loadExpenses();
-    document.querySelector("#expenseForm").reset()
+    document.querySelector("#expenseForm").reset();
   } catch (err) {
     alert("Failed to add expense. Please try again.");
     console.error(err.message);
@@ -58,12 +58,9 @@ async function handleFormSubmit(event) {
 
 async function loadExpenses() {
   const token = JSON.parse(localStorage.getItem("token"));
-
-  const table = document.getElementById("expensesTableBody");
   try {
     const response = await axios.get(
       `http://localhost:4000/expense/getExpenses`,
-
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -72,35 +69,42 @@ async function loadExpenses() {
     );
 
     const expenses = response.data;
+    displayExpenses(expenses);
+  } catch (err) {
+    // alert("Failed to load expenses. Please try again.");
+    messenger("Failed to load expenses. Please try again", false)
+    console.error(err.message);
+  }
+}
 
-    let rows = "";
-    if (expenses.length == 0) {
-      rows = "<tr><td colspan='5'>No Expenses</td></tr>";
-      table.innerHTML = rows;
-      return; // exit the function early if no expenses found to avoid potential error
-    }
-    expenses.forEach((expense) => {
-      rows += `
+function displayExpenses(expenses) {
+  const table = document.getElementById("expensesTableBody");
+  let rows = "";
+  if (expenses.length == 0) {
+    rows = "<tr><td colspan='5'>No Expenses</td></tr>";
+    table.innerHTML = rows;
+    return; // exit the function early if no expenses found to avoid potential error
+  }
+  expenses.forEach((expense) => {
+    rows += `
       <tr>
         <td>${expense.amount}</td>
         <td>${expense.category}</td>
         <td>${expense.description}</td>
         <td>${new Date(expense.createdAt).toLocaleString()}</td>
         <td><button onclick="deleteExpense(${expense.id})">Delete</button></td>
-        </tr>
-        `;
-    });
-    table.innerHTML = rows;
-  } catch (err) {
-    // alert("Failed to load expenses. Please try again.");
-    console.error(err.message);
-  }
+      </tr>
+      `;
+  });
+  table.innerHTML = rows;
+  fetchModalTable();
 }
 
 async function deleteExpense(id) {
   try {
     const response = await axios.delete(`http://localhost:4000/expense/${id}`);
-    loadExpenses();
+    loadExpenses(); 
+    fetchModalTable(); 
   } catch (err) {
     alert("Failed to delete expense. Please try again.");
     console.error(err.message);
@@ -199,29 +203,37 @@ async function premiumButton(isPremium) {
     document.body.style.backgroundImage =
       "linear-gradient(111.4deg, rgba(238,113,113,1) 1%, rgba(246,215,148,1) 58%)";
 
-    // Fetch and display leaderboard data
-    try {
-      const r = await axios.get("http://localhost:4000/user/leader-board");
-      const leaderBoard = r.data.map((user) => ({
-        username: user.username,
-        totalExpense: user.totalExpense,
-      }));
+    fetchModalTable();
+  } else {
+    document.getElementById("premiumButton").style.display = "block";
+    document.getElementById("leader-board").innerHTML = ""; // Clear leaderboard if not premium
+  }
+}
 
-      // Generate HTML for leaderboard
-      let leaderBoardHTML = "";
-      leaderBoardHTML = leaderBoard
-        .map(
-          (user) => `
+async function fetchModalTable() {
+  // Fetch and display leaderboard data
+  try {
+    const res = await axios.get("http://localhost:4000/user/leader-board");
+    const leaderBoard = res.data.map((user) => ({
+      username: user.username,
+      totalExpense: user.totalExpense,
+    }));
+
+    // Generate HTML for leaderboard
+    let leaderBoardHTML = "";
+    leaderBoardHTML = leaderBoard
+      .map(
+        (user) => `
         <tr>
           <td>${user.username}</td>
           <td>${user.totalExpense || "No expenses"}</td>
         </tr>
       `
-        )
-        .join("");
+      )
+      .join("");
 
-      // Update the leaderboard section in the DOM
-      document.getElementById("leader-board").innerHTML = `
+    // Update the leaderboard section in the DOM
+    document.getElementById("leader-board").innerHTML = `
         <dialog id="modal">
         <button onclick="closeModal()">×</button>
         <h4>Leader Board</h4>
@@ -239,13 +251,9 @@ async function premiumButton(isPremium) {
         </dialog>
         <button onclick="showLeaderBoard()">Show Leaderboard</button>
       `;
-    } catch (error) {
-      console.error("Error fetching leaderboard data:", error);
-      // Optionally handle the error, e.g., show an error message to the user
-    }
-  } else {
-    document.getElementById("premiumButton").style.display = "block";
-    document.getElementById("leader-board").innerHTML = ""; // Clear leaderboard if not premium
+  } catch (error) {
+    console.error("Error fetching leaderboard data:", error);
+    // Optionally handle the error, e.g., show an error message to the user
   }
 }
 

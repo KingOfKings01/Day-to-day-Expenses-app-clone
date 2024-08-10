@@ -17,7 +17,6 @@ const Expense = sequelize.define("Expense", {
     default: "food",
   },
   description: DataTypes.TEXT,
-
 });
 
 module.exports = Expense;

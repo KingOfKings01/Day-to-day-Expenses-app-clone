@@ -54,7 +54,9 @@ exports.createUser = async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ message: "Email already exists" });
     } else {
-      const user = await User.create(data);
+      
+      //todo: hook will be called when user is created from encrypting password.
+      const user = await User.create(data);  
 
       const token = User.generateToken({
         id: user.id,

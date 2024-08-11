@@ -44,21 +44,22 @@ exports.getExpenses = async (req, res) => {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = User?.verifyToken(token);
 
-    // console.log(decoded);
-
     const user = await User.findOne({ where: { id: decoded.id } });
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const expenses = await user.getExpenses();
-    res.json(expenses);
+
+    const isPremium = await user.isPremium // todo: To show premium features to the frontend.
+
+    res.json({expenses,isPremium});
+
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
-// delete expense
-
+//todo: Delete expense
 exports.deleteExpense = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
@@ -82,12 +83,15 @@ exports.deleteExpense = async (req, res) => {
 
     // Update the user's totalExpense
     user.totalExpense -= expense.amount;
+    
+    const isPremium = user.isPremium //todo: To show premium features to the frontend.
+
     await user.save({ transaction });
 
     await expense.destroy({ transaction });
 
     await transaction.commit();
-    res.json({ message: "Expense deleted successfully" });
+    res.json({ message: "Expense deleted successfully", isPremium });
   } catch (err) {
     await transaction.rollback();
     res.status(500).json({ message: "Internal Server Error" });

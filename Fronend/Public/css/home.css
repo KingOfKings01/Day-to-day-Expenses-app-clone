@@ -10,12 +10,8 @@ body {
 }
 
 .btn-logout{
-  position: relative;
-  top: 10px;
-  right: 10px;
   display: flex;
   justify-content: flex-end;
-  /* padding: 10px 10px 0 0; */
   button{
     padding: 7px;
     cursor: pointer;

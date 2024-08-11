@@ -68,8 +68,9 @@ async function loadExpenses() {
       }
     );
 
-    const expenses = response.data;
-    displayExpenses(expenses);
+    const expenses = response.data.expenses;
+    const isPremium = response.data.isPremium
+    displayExpenses(expenses, isPremium);
   } catch (err) {
     // alert("Failed to load expenses. Please try again.");
     messenger("Failed to load expenses. Please try again", false)
@@ -77,7 +78,7 @@ async function loadExpenses() {
   }
 }
 
-function displayExpenses(expenses) {
+function displayExpenses(expenses, isPremium) {
   const table = document.getElementById("expensesTableBody");
   let rows = "";
   if (expenses.length == 0) {
@@ -97,14 +98,19 @@ function displayExpenses(expenses) {
       `;
   });
   table.innerHTML = rows;
-  fetchModalTable();
+
+  if(isPremium) // only if user is prime user
+    fetchModalTable();
 }
 
 async function deleteExpense(id) {
   try {
     const response = await axios.delete(`http://localhost:4000/expense/${id}`);
     loadExpenses(); 
-    fetchModalTable(); 
+
+    if(response.data.isPremium)
+    fetchModalTable();
+
   } catch (err) {
     alert("Failed to delete expense. Please try again.");
     console.error(err.message);
@@ -252,7 +258,7 @@ async function fetchModalTable() {
         <button onclick="showLeaderBoard()">Show Leaderboard</button>
       `;
   } catch (error) {
-    console.error("Error fetching leaderboard data:", error);
+    console.error("Error fetching leader board data:", error);
     // Optionally handle the error, e.g., show an error message to the user
   }
 }

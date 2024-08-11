@@ -1,3 +1,4 @@
+const style = `
 * {
   margin: 0;
   padding: 0;
@@ -59,11 +60,6 @@ body {
     &:hover {
       background: #45a049;
     }
-    &:disabled {
-      background-color: #cccccc;
-      color: #666666; 
-      cursor: not-allowed; /* Change cursor to indicate it's disabled */
-  }
   }
 }
 
@@ -75,3 +71,38 @@ body {
     color: #3e4ad3;
   }
 }
+
+`
+
+const form = (id) => `
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Day-to-day Expenses</title>
+    <link rel="stylesheet" href="../../Public/css/auth.css" />
+    <style>
+        ${style}
+    </style>    
+  </head>
+  <body>
+    <div class="containers">
+      <h1 class="title">Set new password</h1>
+      <form
+        action="/password/update-password/${id}"
+        method="post"
+        class="form-controller"
+      >
+        <div class="input-controller">
+          <label for="newPassword">Enter New Password:</label>
+          <input type="password" id="newPassword" name="newPassword" required />
+        </div>
+        <button type="submit" class="btn btn-submit">Submit</button>
+      </form>
+    </div>
+  </body>
+</html>
+`
+
+module.exports = form;

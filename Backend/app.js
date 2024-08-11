@@ -16,7 +16,8 @@ const corsOptions = {
   optionsSuccessStatus: 200, //* Some legacy browsers choke on 204
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
+app.use(express.urlencoded({ extended: true })); //* Allow to get newPassword from local password reset form. 
 app.use(express.json());
 
 const port = process.env.PORT || 4000;

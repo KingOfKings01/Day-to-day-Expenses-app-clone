@@ -97,7 +97,7 @@ exports.protectedRoute = async (req, res) => {
   }
 };
 
-// Buy Premium (order creation)
+//Todo: Buy Premium (order creation)
 exports.buyPremium = async (req, res) => {
   try {
     const razorpay = new Razorpay({
@@ -106,7 +106,7 @@ exports.buyPremium = async (req, res) => {
     });
 
     const options = {
-      amount: 500 * 100, // Amount in Paise (e.g., 500 INR)
+      amount: 200 * 100, //* Amount in Paise (e.g., 500 INR)
       currency: "INR",
       receipt: `order_rcptid_${req.user.id}_${Date.now()}`,
     };
@@ -147,7 +147,7 @@ exports.updateOrder = async (req, res) => {
   res.json(req.body);
 };
 
-// leader board
+//Todo: leader board
 exports.getUsersWithTotalExpenses = async (req, res) => {
   try {
     const usersWithExpenses = await User.findAll({
@@ -156,6 +156,10 @@ exports.getUsersWithTotalExpenses = async (req, res) => {
         'totalExpense',  
       ],
     });
+
+    //todo: Sort the users by total expenses in descending order
+    usersWithExpenses.sort((a, b) => b.totalExpense - a.totalExpense);
+    
 
     res.status(200).json(usersWithExpenses);
   } catch (error) {

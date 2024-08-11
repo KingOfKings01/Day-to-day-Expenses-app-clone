@@ -1,79 +1,97 @@
-const { User } = require("../models/Relation");
-const jwt = require("jsonwebtoken");
+const { User, ForgotPasswordRequest } = require("../models/Relation");
 const nodemailer = require("nodemailer");
+const { v4: uuidv4 } = require("uuid");
+const form = require("../view/form");
 
 exports.forgotPassword = async (req, res) => {
-    const userEmail = req.body.email;
+  const userEmail = req.body.email;
 
-    // Find the user by email
-    let user;
-    try {
-        user = await User.findOne({ where: { email: userEmail } });
-        if (!user) return res.status(404).json({ message: "User not found" });
-    } catch (err) {
-        return res.status(500).json({ message: "Internal server error" });
-    }
+  //Todo: Find the user by email
+  try {
+    const user = await User.findOne({ where: { email: userEmail } });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Generate token
-    const token = jwt.sign(
-        { email: user.email },
-        process.env.JWT_SECRET, // Secret key from your environment variables
-        { expiresIn: '1h' } // Token expiration time
-    );
+    //Todo: Register user's reset password request and set uuid.
+    const uuid = uuidv4();
+    user.createForgotPasswordRequest({ id: uuid, isActive: true });
 
-    // Send the email
-    try {
-        const transporter = nodemailer.createTransport({
-            secure: true,
-            host: "smtp.gmail.com",
-            port: 465,
-            auth: {
-                user: process.env.EMAIL, // Your email address
-                pass: process.env.PASSWORD, // Your email password
-            },
-        });
+    //Todo: Send the email
+    const transporter = nodemailer.createTransport({
+      secure: true,
+      host: "smtp.gmail.com",
+      port: 465,
+      auth: {
+        user: process.env.EMAIL, //* Your email address
+        pass: process.env.PASSWORD, //* Your email password
+      },
+    });
 
-        // Define the email options
-        const mailOptions = {
-            to: userEmail, // Recipient's email address (from the request)
-            subject: "Password Reset Request",
-            html: `<p>Please click the <a href="http://localhost:4000/password/reset-password/${token}">link</a> to reset your password. The link will expire in 1 hour.</p>`,
-        };
+    //Todo: Define the email options
+    const mailOptions = {
+      to: userEmail, //* Recipient's email address (from the request)
+      subject: "Password Reset Request",
+      html: `
+      <p>Hi ${user.username},</p>
+      <p>Please click the <a href="http://localhost:4000/password/reset-password/${uuid}">link</a> to reset your password.</p>`,
+    };
 
-        // Send the email
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent:", nodemailer.getTestMessageUrl(info)); // For testing with Ethereal
+    //Todo: Send the email
+    const info = await transporter.sendMail(mailOptions);
 
-        return res.status(200).json({ message: "Password reset email sent" });
-    } catch (error) {
-        return res.status(500).json({ message: "Error sending email" });
-    }
+    return res.status(200).json({ message: "Password reset email sent" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error sending email" });
+  }
 };
 
 exports.resetPassword = async (req, res) => {
-  const token = req.params.token;
-  const newPassword = req.body.newPassword;
-
-  // Verify the token
-  let decoded;
+  //Todo: Send reset password form
   try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = req.params.uuid;
+    const userRequest = await ForgotPasswordRequest.findOne({ where: { id } });
+    if (!userRequest)
+      return res.status(401).json({ message: "User request not found" });
+
+    if (!userRequest.isActive)
+      return res.send(
+        "<center><h1>Password reset request has expired!</h1></center>"
+      );
+    await userRequest.update({ isActive: false });
+
+    res.status(200).send(form(id));
   } catch (err) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+    return res.status(500).json({ message: "Internal server error" });
   }
+};
 
-  const userEmail = decoded.email;
+exports.updatePassword = async (req, res) => {
+  console.table(req.params);
+  console.table(req.body);
 
-  // Find the user and update the password
+  //Todo: Update the user's password
   try {
-      const user = await User.findOne({ where: { email: userEmail } });
-      if (!user) return res.status(404).json({ message: "User not found" });
+    const id = req.params.uuid;
+    const userRequest = await ForgotPasswordRequest.findOne({ where: { id } });
 
-      user.password = newPassword; //* No need to hash, it will be handled by the beforeUpdate hook
-      await user.save();
+    console.table(userRequest.userId);
+    console.table(userRequest.isActive);
 
-      return res.status(200).json({ message: "Password reset successfully" });
+    if (!userRequest)
+      return res.status(401).json({ message: "User request not found" });
+
+    if (userRequest.isActive)
+        return res.send(
+          "<center><h1>Password reset request has expired!</h1></center>"
+        );
+
+    const user = await User.findByPk(userRequest.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    await user.update({ password: req.body.newPassword });
+    await userRequest.update({ isActive: true });
+
+    res.status(200).send("<center> <h1>Password updated</h1> </center>");
   } catch (err) {
-      return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

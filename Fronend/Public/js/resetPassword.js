@@ -10,7 +10,7 @@ async function handleResetPassword(event) {
     handleError(err.response.status);
   }
 }
-'asifkhanbac@gmail.com'
+
 function handleError(status) {
   switch (status) {
     case 401:
@@ -38,4 +38,10 @@ function messenger(message) {
   setTimeout(() => {
     alertMessageDiv.innerHTML = "";
   }, 3000);
+}
+
+
+function closeAlert() {
+  const alertBoxDiv = document.getElementById("alert-box");
+  alertBoxDiv.style.display = "none";
 }

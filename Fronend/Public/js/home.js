@@ -69,11 +69,11 @@ async function loadExpenses() {
     );
 
     const expenses = response.data.expenses;
-    const isPremium = response.data.isPremium
+    const isPremium = response.data.isPremium;
     displayExpenses(expenses, isPremium);
   } catch (err) {
     // alert("Failed to load expenses. Please try again.");
-    messenger("Failed to load expenses. Please try again", false)
+    messenger("Failed to load expenses. Please try again", false);
     console.error(err.message);
   }
 }
@@ -99,18 +99,17 @@ function displayExpenses(expenses, isPremium) {
   });
   table.innerHTML = rows;
 
-  if(isPremium) // only if user is prime user
+  if (isPremium)
+    // only if user is prime user
     fetchModalTable();
 }
 
 async function deleteExpense(id) {
   try {
     const response = await axios.delete(`http://localhost:4000/expense/${id}`);
-    loadExpenses(); 
+    loadExpenses();
 
-    if(response.data.isPremium)
-    fetchModalTable();
-
+    if (response.data.isPremium) fetchModalTable();
   } catch (err) {
     alert("Failed to delete expense. Please try again.");
     console.error(err.message);
@@ -185,7 +184,7 @@ const buyPremium = async () => {
   }
 };
 
-function messenger(message, state) {
+function messenger(message, state = false) {
   const alertMessageDiv = document.getElementById("alert-box");
 
   const color = state ? "#4CAF50" : "#f44336";
@@ -227,20 +226,21 @@ async function fetchModalTable() {
 
     // Generate HTML for leaderboard
     let leaderBoardHTML = "";
-    leaderBoardHTML = leaderBoard
-      .map(
-        (user) => `
+    leaderBoardHTML = leaderBoard.map(
+      (user) => `
         <tr>
           <td>${user.username}</td>
           <td>${user.totalExpense || "No expenses"}</td>
         </tr>
       `
-      )
-      .join("");
+    );
+    leaderBoardHTML.join("");
 
     // Update the leaderboard section in the DOM
-    document.getElementById("leader-board").innerHTML = `
-        <dialog id="modal">
+    const element = document.getElementById("leader-board");
+
+    const modal = `
+    <dialog id="modal">
         <button onclick="closeModal()">×</button>
         <h4>Leader Board</h4>
           <table>
@@ -255,8 +255,13 @@ async function fetchModalTable() {
             </tbody>
           </table>
         </dialog>
-        <button onclick="showLeaderBoard()">Show Leaderboard</button>
+    `;
+    const buttons = `
+        <button class="btn btn-first" onclick="showLeaderBoard()">Show Leader board</button>
+        <button class="btn btn-second" onclick="downloadReport()">Download Report</button>
       `;
+
+    element.innerHTML = modal + buttons;
   } catch (error) {
     console.error("Error fetching leader board data:", error);
     // Optionally handle the error, e.g., show an error message to the user
@@ -273,7 +278,28 @@ function closeModal() {
   dialog.close();
 }
 
-function logout(){
+function logout() {
   localStorage.clear();
-  window.location.href = "../../../Fronend/views/auth/login.html"
+  window.location.href = "../../../Fronend/views/auth/login.html";
+}
+
+async function downloadReport() {
+  const token = JSON.parse(localStorage.getItem("token"));
+  if (!token) {
+    window.location.href = "../views/auth/login.html";
+    return;
+  }
+
+  try {
+    const response = await axios.get("http://localhost:4000/user/download", {
+      headers: { Authorization: token },
+    });
+    const a = document.createElement("a");
+    a.href = response.data.fileUrl;
+    a.download = "my_expense.csv";
+    a.click();
+  } catch (err) {
+    console.error(err);
+    messenger("Failed to download report. Please try again.", false);
+  }
 }

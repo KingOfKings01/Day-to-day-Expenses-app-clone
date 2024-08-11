@@ -24,15 +24,25 @@ body {
 }
 
 #leader-board {
-  button{
+  .btn{
     padding: 10px;
-    background: #516be9;
-    color: #fff;
     outline: none;
     border: none;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
     font-weight: 300;
+    cursor: pointer;
   }
+
+  .btn-first{
+    background: #5451e9;
+    color: #fff;
+  }
+
+  .btn-second{
+    background: #22c8ff;
+    color: #fff;
+    text-decoration: none;
+  }  
   margin-bottom: 20px;
 }
 

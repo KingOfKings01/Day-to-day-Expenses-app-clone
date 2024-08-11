@@ -59,7 +59,7 @@ User.generateToken = function (user) {
   return jwt.sign(
     { id: user.id, username: user.username },
     process.env.JWT_SECRET,
-    { expiresIn: "24h" } // Token will expire in 24 hours
+    //// { expiresIn: "24h" } // Token will expire in 24 hours
   );
 };
 

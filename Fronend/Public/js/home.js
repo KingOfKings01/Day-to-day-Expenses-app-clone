@@ -266,3 +266,8 @@ function closeModal() {
   const dialog = document.querySelector("#modal");
   dialog.close();
 }
+
+function logout(){
+  localStorage.clear();
+  window.location.href = "../../../Fronend/views/auth/login.html"
+}

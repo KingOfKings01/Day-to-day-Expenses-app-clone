@@ -1,4 +1,4 @@
-const { User, ForgotPasswordRequest } = require("../models/Relation");
+const { User, ForgotPasswordRequest } = require("../relations/Relation");
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
 const form = require("../view/form");

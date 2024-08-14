@@ -1,34 +1,5 @@
-const { User, Order, Expense } = require("../models/Relation");
+const { User, Order, Downloaded } = require("../relations/Relation");
 const Razorpay = require("razorpay");
-
-exports.verifyToken = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Authorization token is missing" });
-    }
-
-    const decoded = User.verifyToken(token);
-
-    if (!decoded) {
-      return res.status(401).json({ message: "Invalid or expired token" });
-    }
-
-    const user = await User.findByPk(decoded.id);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    req.user = user; // Attach user object to request
-    next();
-  } catch (error) {
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
 
 // Create a new User
 exports.createUser = async (req, res) => {
@@ -49,7 +20,7 @@ exports.createUser = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: "Email already exists" });
+      return res.status(409).json({ message: "User already exists" });
     } else {
       
       //todo: hook will be called when user is created from encrypting password.
@@ -89,9 +60,7 @@ exports.loginUser = async (req, res) => {
 // Protected route example using verifyToken middleware
 exports.protectedRoute = async (req, res) => {
   try {
-    return res
-      .status(200)
-      .json({ username: req.user.username, isPremium: req.user.isPremium });
+    return res.status(200).json({ username: req.user.username, isPremium: req.user.isPremium });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
@@ -142,7 +111,7 @@ exports.updateOrder = async (req, res) => {
       }
     }
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: "Unable to update member status" });
   }
   res.json(req.body);
 };
@@ -166,3 +135,17 @@ exports.getUsersWithTotalExpenses = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", error });
   }
 };
+
+
+exports.getDownloadHistory = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const downloadHistory = await Downloaded.findAll({
+        where: { userId: userId },
+        attributes: ["fileName", "createdAt", "url"]
+      });
+      res.status(200).json(downloadHistory);
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error", error });
+    }
+}

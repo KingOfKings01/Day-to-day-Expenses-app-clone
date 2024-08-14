@@ -14,46 +14,17 @@ async function handleAuthorization(event) {
     );
     success(response.data.token);
   } catch (err) {
-    const status = err?.response?.status;
-    handleError(status);
-  }
-}
-
-function messenger(message) {
-  const alertMessageDiv = document.getElementById("alert-box");
-
-  alertMessageDiv.innerHTML = `<div>${message}<button onclick="closeAlert()">×</sub></div>`;
-
-  setTimeout(() => {
-    alertMessageDiv.innerHTML = "";
-  }, 3000);
-}
-
-function closeAlert() {
-  const alertBoxDiv = document.getElementById("alert-box");
-  alertBoxDiv.style.display = "none";
-}
-
-function handleError(status) {
-  switch (status) {
-    case 401:
-      messenger("User not authorized"); // password incorrect
-      break;
-    case 404:
-      messenger("User not found"); 
-      break;
-    case 409:
-      messenger("User already exists");
-      break;
-    case 500:
-      messenger("Internal Server Error");
-      break;
-    default:
-      messenger("Failed to register. Please try again.");
+    const message = (err?.response?.data?.message) || "Failed to register. Please try again later."
+    messenger(message, false);
   }
 }
 
 function success(token) {
   localStorage.setItem("token", JSON.stringify(token));
   window.location.href = "../../views/home.html";
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "../../../Fronend/views/auth/login.html";
 }

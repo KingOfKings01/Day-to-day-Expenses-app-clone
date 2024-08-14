@@ -9,10 +9,10 @@ body {
   background-color: #f1f1f1;
 }
 
-.btn-logout{
+.btn-logout {
   display: flex;
   justify-content: flex-end;
-  button{
+  button {
     padding: 7px;
     cursor: pointer;
     background: #ffaf37;
@@ -20,11 +20,12 @@ body {
     outline: none;
     color: #fff;
     border-radius: 5px;
-  } 
+  }
 }
 
 #leader-board {
-  .btn{
+  margin-bottom: 20px;
+  .btn {
     padding: 10px;
     outline: none;
     border: none;
@@ -33,20 +34,17 @@ body {
     cursor: pointer;
   }
 
-  .btn-first{
+  .btn-first {
     background: #5451e9;
     color: #fff;
   }
 
-  .btn-second{
+  .btn-second {
     background: #22c8ff;
     color: #fff;
     text-decoration: none;
-  }  
-  margin-bottom: 20px;
-}
+  }
 
-#leader-board {
   #modal {
     position: absolute;
     top: 50%;
@@ -59,15 +57,13 @@ body {
     border-radius: 20px;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 
-
-    h4{
+    h4 {
       margin-top: 30px;
       text-align: center;
       font-size: 1.2rem;
       padding: 20px 0;
       background: #516be9;
       color: #fff;
-
     }
 
     button {
@@ -83,7 +79,6 @@ body {
     }
 
     table {
-      
       width: 100%;
       border-collapse: collapse;
       border-spacing: 5px;

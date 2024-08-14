@@ -1,5 +1,8 @@
-const { User, Expense } = require("../models/Relation");
+const { User, Expense } = require("../relations/Relation");
 const sequelize = require("../config/database");
+
+const { Parser } = require('json2csv');
+const AWS = require("aws-sdk");
 
 // Create a new User
 exports.createExpense = async (req, res) => {
@@ -50,10 +53,9 @@ exports.getExpenses = async (req, res) => {
 
     const expenses = await user.getExpenses();
 
-    const isPremium = await user.isPremium // todo: To show premium features to the frontend.
+    const isPremium = await user.isPremium; // todo: To show premium features to the frontend.
 
-    res.json({expenses,isPremium});
-
+    res.json({ expenses, isPremium });
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -74,7 +76,7 @@ exports.deleteExpense = async (req, res) => {
       return res.status(404).json({ message: "Expense not found" });
     }
 
-    const user = expense.User
+    const user = expense.User;
 
     if (!user) {
       await transaction.rollback();
@@ -83,8 +85,8 @@ exports.deleteExpense = async (req, res) => {
 
     // Update the user's totalExpense
     user.totalExpense -= expense.amount;
-    
-    const isPremium = user.isPremium //todo: To show premium features to the frontend.
+
+    const isPremium = user.isPremium; //todo: To show premium features to the frontend.
 
     await user.save({ transaction });
 
@@ -97,3 +99,47 @@ exports.deleteExpense = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+exports.downloadExpenses = async (req, res) => {
+  try {
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      region: process.env.AWS_REGION,
+    });
+
+    const userId = req.user.id;
+    const expenses = await req.user.getExpenses({
+      attributes: ['amount', 'category', 'description', 'createdAt']
+    });
+
+    // Convert JSON to CSV
+    const fields = ['amount', 'category', 'description', 'createdAt']
+    const json2csvParser = new Parser({ fields });
+    const csv = json2csvParser.parse(expenses);
+
+    const key = `myExpenses${userId}${Date.now()}.csv`;
+    const params = {
+      Bucket: process.env.BUCKET_NAME,
+      Key: key,
+      Body: csv,
+      ACL: "public-read",
+      ContentType: "text/csv"
+    };
+
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        return res.status(500).json({ message: "Error generating signed URL" });
+      }
+
+      const fileInfo = {fileName: key, url: data.Location}
+      const  response = await req.user.createDownloaded(fileInfo)
+      console.log(response);
+
+      return res.status(200).json({ fileUrl: data.Location });
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+

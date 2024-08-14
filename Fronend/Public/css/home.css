@@ -23,7 +23,7 @@ body {
   }
 }
 
-#leader-board {
+#modal-board {
   margin-bottom: 20px;
   .btn {
     padding: 10px;
@@ -45,39 +45,55 @@ body {
     text-decoration: none;
   }
 
-  #modal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60vw;
-    height: 80vh;
-    padding: 20px;
+}
+#modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60vw;
+  height: 80vh;
+  padding: 20px;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  
+  h4 {
+    width: 100%;
+    margin-top: 30px;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 20px 0;
+    background: #516be9;
+    color: #fff;
+  }
+  .btn-download{
+    /* margin-top: 20px; */
+    background: #673ddbe3;
+    color: #fff;
+    cursor: pointer;
     border: none;
-    border-radius: 20px;
-    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-
-    h4 {
-      margin-top: 30px;
-      text-align: center;
-      font-size: 1.2rem;
-      padding: 20px 0;
-      background: #516be9;
-      color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    &:hover {
+      background: #6232e9;
     }
+  }
 
-    button {
-      position: absolute;
-      top: 20px; /* Adjust the top spacing as needed */
-      right: 20px; /* Adjust the right spacing as needed */
-      background: #3f3f3f97;
-      color: #fff;
-      border: none; /* Remove border */
-      padding: 5px 10px; /* Padding for button */
-      cursor: pointer; /* Pointer cursor on hover */
-      border-radius: 5px; /* Optional: Rounded corners for button */
-    }
-
+  .close-btn {
+    position: absolute;
+    top: 20px; /* Adjust the top spacing as needed */
+    right: 20px; /* Adjust the right spacing as needed */
+    background: #3f3f3f97;
+    color: #fff;
+    border: none; /* Remove border */
+    padding: 5px 10px; /* Padding for button */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Optional: Rounded corners for button */
+  }
+  
+  .modal-table{
+    overflow: auto;
     table {
       width: 100%;
       border-collapse: collapse;
@@ -85,7 +101,7 @@ body {
       border: 1px solid #cccccc;
       text-align: center;
     }
-
+  
     th,
     td {
       padding: 8px;
@@ -167,11 +183,13 @@ body {
       }
     }
   }
+
   .expensesTable {
     width: 100%;
     max-width: 600px;
     margin: 20px auto;
     overflow: auto;
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -185,5 +203,28 @@ body {
       padding: 8px;
       border: 1px solid #cccccc;
     }
+  }
+
+  
+}
+
+.btn{
+  padding: 7px 10px;
+  margin-right: 10px;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+}
+
+.btn-delete{
+  background: #f44336;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  &:hover {
+    background: #f3130f;
   }
 }

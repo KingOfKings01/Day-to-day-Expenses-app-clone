@@ -4,17 +4,16 @@ async function handleAuthorization(event) {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const data = { username, email, password };
-
-  const endpoint = username ? "sing-in" : "login";
   try {
-    const response = await axios.post(
-      "http://localhost:4000/user/" + endpoint,
-      data
-    );
-    success(response.data.token);
+    let token
+    if (username) {
+      token = await singIn({ username, email, password });
+    } else {
+      token = await login({ email, password });
+    }
+    success(token);
   } catch (err) {
-    const message = (err?.response?.data?.message) || "Failed to register. Please try again later."
+    const message = err.message;
     messenger(message, false);
   }
 }

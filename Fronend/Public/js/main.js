@@ -1,17 +1,27 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  
-  const { username, isPremium } = await protected()
+  const token = JSON.parse(localStorage.getItem("token"));
 
-  premiumButton(isPremium)
-  PremiumHandler(isPremium)
+  if (!token) {
+    window.location.href = "../views/login.html";
+    return;
+  }
 
-  // Set the welcome message
-  const message = isPremium ? "Thank you for being a Premium Member!" : "";
-  document.getElementById(
-    "welcome"
-  ).innerText = `Welcome, ${username}! \n${message}`;
+  try {
+    const { username, isPremium } = await protected();
 
-  loadExpenses();
+    premiumButton(isPremium);
+    PremiumHandler(isPremium);
+
+    // Set the welcome message
+    const message = isPremium ? "Thank you for being a Premium Member!" : "";
+    document.getElementById(
+      "welcome"
+    ).innerText = `Welcome, ${username}! \n${message}`;
+
+    loadExpenses();
+  } catch (err) {
+    messenger(err.message, false);
+  }
 });
 
 async function handleFormSubmit(event) {
@@ -28,18 +38,12 @@ async function handleFormSubmit(event) {
   const token = JSON.parse(localStorage.getItem("token"));
 
   try {
-    const response = await axios.post(
-      `http://localhost:4000/expense/createExpense`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    await createExpense(token, data);
+
     loadExpenses();
     document.querySelector("#expenseForm").reset();
   } catch (err) {
+    console.log(err);
     const message =
       err?.response?.data?.message ||
       "Something want wrong! Please try again later.";
@@ -50,21 +54,11 @@ async function handleFormSubmit(event) {
 async function loadExpenses() {
   const token = JSON.parse(localStorage.getItem("token"));
   try {
-    const response = await axios.get(
-      `http://localhost:4000/expense/getExpenses`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const expenses = response.data.expenses;
+    const expenses = await fetchUserExpenses(token);
+    
     displayExpenses(expenses);
   } catch (err) {
-    // alert("Failed to load expenses. Please try again.");
-    messenger("Failed to load expenses. Please try again", false);
-    console.error(err.message);
+    messenger(err.message, false);
   }
 }
 
@@ -78,22 +72,25 @@ function displayExpenses(expenses) {
   }
   expenses.forEach((expense) => {
     rows += `
-      <tr>
-        <td>${expense.amount}</td>
-        <td>${expense.category}</td>
-        <td>${expense.description}</td>
-        <td>${new Date(expense.createdAt).toLocaleString()}</td>
-        <td><button onclick="deleteExpense(${expense.id})">Delete</button></td>
-      </tr>
-      `;
+    <tr>
+    <td>${expense.amount}</td>
+    <td>${expense.category}</td>
+    <td>${expense.description}</td>
+    <td>${new Date(expense.createdAt).toLocaleString()}</td>
+    <td><button class="btn btn-delete" onclick="deleteExpense(${expense.id})">Delete</button></td>
+    </tr>
+    `;
   });
   table.innerHTML = rows;
 }
 
 async function deleteExpense(id) {
+  
+  const token = JSON.parse(localStorage.getItem("token"));
   try {
-    const response = await axios.delete(`http://localhost:4000/expense/${id}`);
-    loadExpenses();
+    await deletingExpense(token, id)
+    
+    loadExpenses(); // TODO: Reload expenses
   } catch (err) {
     alert("Failed to delete expense. Please try again.");
     console.error(err.message);
@@ -106,9 +103,13 @@ async function premiumButton(isPremium) {
     document.getElementById("premiumButton").style.display = "none";
     document.body.style.backgroundImage =
       "linear-gradient(111.4deg, rgba(238,113,113,1) 1%, rgba(246,215,148,1) 58%)";
-    fetchModalTable();
+
+    //***************************** PREMIUM ********************************\\
+    // fetchModalTable();
   } else {
     document.getElementById("premiumButton").style.display = "block";
-    document.getElementById("leader-board").innerHTML = ""; // Clear leaderboard if not premium
+    
+    //!  ????????????????????????????????????
+    // document.getElementById("leader-board").innerHTML = ""; // Clear leaderboard if not premium
   }
 }

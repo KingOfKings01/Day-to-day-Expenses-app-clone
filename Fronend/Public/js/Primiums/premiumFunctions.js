@@ -1,10 +1,12 @@
-function PremiumHandler(isPremium){
-    if(isPremium){
-        fetchModalTable()
-    }
+function PremiumHandler(isPremium) {
+  if (!isPremium) return;
+  document.querySelector(
+    "#modal-board"
+  ).innerHTML = ` <button class="btn btn-first" onclick="showLeaderBoard()">Show Leader board</button>
+    <button class="btn btn-second" onclick="downloadReportBoard()">Download Report</button>`;
 }
 
-const modalHtml = (title, heads, rows) => {
+const modalHtml = (title, heads, rows, btn = "") => {
   // Generate HTML for table headers
   const headsHtml = heads.map((head) => `<th>${head}</th>`).join("");
 
@@ -22,46 +24,52 @@ const modalHtml = (title, heads, rows) => {
     .join("");
 
   return `
+  <div class="modal">
     <dialog id="modal">
-      <button onclick="closeModal()">×</button>
+      <button class="close-btn" onclick="closeModal()">×</button>
+      ${btn}
       <h4>${title}</h4>
-      <table>
-        <thead>
-          <tr>
-            ${headsHtml}
-          </tr>
-        </thead>
-        <tbody id="leader-board-table">
-          ${rowsHtml}
-        </tbody>
-      </table>
+      <div class="modal-table">
+        <table>
+          <thead>
+            <tr>
+              ${headsHtml}
+            </tr>
+          </thead>
+          <tbody id="leader-board-table">
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
     </dialog>
+  </div>
   `;
 };
 
 async function fetchModalTable() {
   // Fetch and display leaderboard data
+  const token = JSON.parse(localStorage.getItem("token"));
   try {
-    const res = await axios.get("http://localhost:4000/user/leader-board");
-    const leaderBoard = res.data.map((user) => ({
+    const res = await fetchLeaderBoard(token);
+
+    const leaderBoard = res.map((user) => ({
       username: user.username,
       totalExpense: user.totalExpense,
     }));
 
-    // Update the leaderboard section in the DOM
+    // Update the leader board section in the DOM
 
     const heads = ["User", "Total Expense"];
-    const btn1Parameters = `Leader Board, ${heads}, ${leaderBoard}`;
-    const leaderBoardHtml = modalHtml(btn1Parameters)
+    const leaderBoardModal = modalHtml("Leader Board", heads, leaderBoard);
 
-    document.getElementById("leaderboard").innerHTML = leaderBoardHtml
-
-  } catch (error) {
-    console.error("Error fetching leader board data:", error);
+    document.querySelector("#modal-table").innerHTML = leaderBoardModal;
+  } catch (err) {
+    messenger(err.message, false);
   }
 }
 
-function showLeaderBoard() {
+async function showLeaderBoard() {
+  await fetchModalTable();
   const dialog = document.querySelector("#modal");
   dialog.showModal();
 }
@@ -69,4 +77,41 @@ function showLeaderBoard() {
 function closeModal() {
   const dialog = document.querySelector("#modal");
   dialog.close();
+}
+
+async function downloadReportBoard() {
+  const token = JSON.parse(localStorage.getItem("token"));
+  try {
+    const files = await fetchDownloadHistory(token);
+    files.forEach((file) => {
+      file.url = `<a class="btn btn-download" href="${file.url}" download>Download</a>`;
+    });
+    const heads = ["Filename", "Date", "Download"];
+
+    const btn = `<button class="btn btn-download" onclick="downloadReport()">New Report</button>`;
+
+    let modal = modalHtml("Download history", heads, files, btn);
+
+    document.querySelector("#modal-table").innerHTML = modal;
+
+    const dialog = document.querySelector("#modal");
+    dialog.showModal();
+  } catch (err) {
+    messenger(err.message, false);
+  }
+}
+
+async function downloadReport() {
+  try{
+    const token = JSON.parse(localStorage.getItem("token"));
+    const fileUrl = await fetchReport(token);
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.click(); // download report
+    
+    closeModal() // close modal
+  } catch (err) {
+    console.log(err);
+    messenger(err.message, false);
+  }
 }

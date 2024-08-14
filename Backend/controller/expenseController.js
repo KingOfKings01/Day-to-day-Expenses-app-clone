@@ -118,7 +118,7 @@ exports.downloadExpenses = async (req, res) => {
     const json2csvParser = new Parser({ fields });
     const csv = json2csvParser.parse(expenses);
 
-    const key = `myExpenses${userId}${Date.now()}.csv`;
+    const key = `myExpenses-${userId}${Date.now()}.csv`;
     const params = {
       Bucket: process.env.BUCKET_NAME,
       Key: key,

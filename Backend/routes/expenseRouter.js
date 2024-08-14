@@ -3,14 +3,14 @@ const {
   createExpense,
   getExpenses,
   deleteExpense,
-  downloadExpenses
+  downloadExpenses,
 } = require("../controller/expenseController");
 const { verifyToken } = require("../middleware/auth");
 const router = express.Router();
 
-router.post("/createExpense", createExpense);
-router.get("/getExpenses", getExpenses);
+router.post("/createExpense", verifyToken, createExpense);
+router.get("/getExpenses", verifyToken, getExpenses);
 router.get("/download", verifyToken, downloadExpenses);
-router.delete("/:id", deleteExpense);
+router.delete("/:id", verifyToken, deleteExpense);
 
 module.exports = router;

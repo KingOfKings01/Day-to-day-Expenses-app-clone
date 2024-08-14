@@ -15,11 +15,10 @@ const router = express.Router();
 
 router.post("/login", loginUser);
 router.post("/sing-in", createUser);
-router.post("/update-order", updateOrder);
-
-router.get("/leader-board", getUsersWithTotalExpenses);
+router.post("/update-order", updateOrder); //! Protect
 
 // Use the verifyToken middleware for protected routes
+router.get("/leader-board", verifyToken, getUsersWithTotalExpenses);
 router.post("/buy-premium", verifyToken, buyPremium);
 router.post("/protected-route", verifyToken, protectedRoute);
 router.get("/download-history", verifyToken, getDownloadHistory);

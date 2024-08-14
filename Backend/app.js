@@ -1,7 +1,8 @@
+require("dotenv").config(); // Load environment variables
 const express = require("express");
 const sequelize = require("./config/database");
 const cors = require("cors");
-require("dotenv").config(); // Load environment variables
+const helmet = require("helmet")
 
 const userRoutes = require("./routes/userRouter");
 const expenseRoutes = require("./routes/expenseRouter");
@@ -16,7 +17,8 @@ const corsOptions = {
   optionsSuccessStatus: 200, //* Some legacy browsers choke on 204
 };
 
-app.use(cors());
+app.use(helmet())
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true })); //* Allow to get newPassword from local password reset form. 
 app.use(express.json());
 

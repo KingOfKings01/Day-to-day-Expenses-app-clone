@@ -1,7 +1,7 @@
 const { User, ForgotPasswordRequest } = require("../relations/Relation");
 const { v4: uuidv4 } = require("uuid");
 const form = require("../view/form");
-const EmailService = require('../services/emailService');
+const EmailService = require("../services/emailService");
 
 exports.forgotPassword = async (req, res) => {
   const userEmail = req.body.email;
@@ -26,12 +26,9 @@ exports.forgotPassword = async (req, res) => {
 
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
-    console.error('Error in forgotPassword controller:', error);
     return res.status(500).json({ message: "Error sending email" });
   }
 };
-
-
 
 exports.resetPassword = async (req, res) => {
   //Todo: Send reset password form
@@ -54,24 +51,18 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.updatePassword = async (req, res) => {
-  console.table(req.params);
-  console.table(req.body);
-
   //Todo: Update the user's password
   try {
     const id = req.params.uuid;
     const userRequest = await ForgotPasswordRequest.findOne({ where: { id } });
 
-    console.table(userRequest.userId);
-    console.table(userRequest.isActive);
-
     if (!userRequest)
       return res.status(401).json({ message: "User request not found" });
 
     if (userRequest.isActive)
-        return res.send(
-          "<center><h1>Password reset request has expired!</h1></center>"
-        );
+      return res.send(
+        "<center><h1>Password reset request has expired!</h1></center>"
+      );
 
     const user = await User.findByPk(userRequest.userId);
     if (!user) return res.status(404).json({ message: "User not found" });

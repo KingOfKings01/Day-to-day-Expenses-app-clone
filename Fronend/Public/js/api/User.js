@@ -49,7 +49,6 @@ async function fetchUserExpenses(token, page = 1, limit = 10) {
         },
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (err) {
     throw new Error(

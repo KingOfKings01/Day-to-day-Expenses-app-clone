@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Day-to-day Expenses</title>
-    <link rel="stylesheet" href="../Public/css/home.css">
-    <link rel="stylesheet" href="../Public/css/message-box.css">
+    <link rel="stylesheet" href="../Public/css/home.css" />
+    <link rel="stylesheet" href="../Public/css/pagination.css" />
+    <link rel="stylesheet" href="../Public/css/message-box.css" />
   </head>
   <body>
     <div id="alert-box"></div>
@@ -17,15 +18,11 @@
       <div class="btn-logout">
         <button onclick="logout()">Logout</button>
       </div>
-      
-      <h3 id="welcome">Welcome</h3>
-      
-      <div id="modal-board">
-       
-      </div>
-      <div id="modal-table">
 
-      </div>
+      <h3 id="welcome">Welcome</h3>
+
+      <div id="modal-board"></div>
+      <div id="modal-table"></div>
 
       <form
         onsubmit="handleFormSubmit(event)"
@@ -58,7 +55,26 @@
       </form>
 
       <div class="expensesTable">
-        <h4>Expenses:</h4>
+        <div class="Row">
+          <h4>Expenses</h4>
+          <div class="limit-selector">
+            Rows per page:
+            <select
+              onchange="numberOfPages()"
+              name="number-of-page"
+              id="number-of-page"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+              <option value="35">35</option>
+              <option value="40">40</option>
+            </select>
+          </div>
+        </div>
         <table>
           <thead>
             <tr>
@@ -74,22 +90,19 @@
           </tbody>
         </table>
 
-        <div id="page-numbers">
-          
-        </div>
+        <div id="page-numbers"></div>
       </div>
     </div>
 
     <script src="../Public/js/api/User.js"></script>
     <script src="../Public/js/api/Razorpay.js"></script>
     <script src="../Public/js/api/Premium.js"></script>
-    
+
     <script src="../Public/js/buyPremium.js"></script>
     <script src="../Public/js/messenger.js"></script>
     <script src="../Public/js/main.js"></script>
     <script src="../Public/js/authorization.js"></script>
     <script src="../Public/js/Primiums/premiumFunctions.js"></script>
-
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

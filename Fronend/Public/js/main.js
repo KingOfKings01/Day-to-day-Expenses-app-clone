@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  const storedValue = localStorage.getItem("numberOfPages");
+  if (storedValue) {
+    document.getElementById("number-of-page").value = storedValue;
+  }
+
   const token = JSON.parse(localStorage.getItem("token"));
 
   if (!token) {
@@ -43,23 +48,33 @@ async function handleFormSubmit(event) {
     loadExpenses();
     document.querySelector("#expenseForm").reset();
   } catch (err) {
-    console.log(err);
-    const message =
-      err?.response?.data?.message ||
-      "Something want wrong! Please try again later.";
-    messenger(message, false);
+    messenger(err.message, false);
   }
 }
 
 let currentPage = 1;
 let totalPages = 1; // Total number of pages, initially set to 1
-const limit = 2; // Number of items per page
+// Number of items per page
+const limit = (localStorage.getItem("numberOfPages") || 5);
+
+function numberOfPages() {
+  const selectElement = document.getElementById("number-of-page");
+  const selectedValue = selectElement.value;
+
+  localStorage.setItem("numberOfPages", selectedValue);
+
+  loadExpenses();
+}
 
 async function loadExpenses(page = 1) {
   if (page < 1 || page > totalPages) return;
   const token = JSON.parse(localStorage.getItem("token"));
   try {
-    const { expenses, pagination } = await fetchUserExpenses(token, page, limit);
+    const { expenses, pagination } = await fetchUserExpenses(
+      token,
+      page,
+      limit
+    );
     displayExpenses(expenses);
 
     currentPage = pagination.currentPage;
@@ -68,7 +83,7 @@ async function loadExpenses(page = 1) {
     // Update pagination controls
     updatePaginationControls();
   } catch (error) {
-    console.error(error.message);
+    messenger(error.message, false);
   }
 }
 
@@ -96,17 +111,18 @@ function displayExpenses(expenses) {
   table.innerHTML = rows;
 }
 
-
 function updatePaginationControls() {
-  const pageNumbersContainer = document.getElementById('page-numbers');
-  pageNumbersContainer.innerHTML = '';
+  const pageNumbersContainer = document.getElementById("page-numbers");
+  pageNumbersContainer.innerHTML = "";
 
   const range = 2; // Number of page links to show before and after the current page
   const startPage = Math.max(1, currentPage - range);
   const endPage = Math.min(totalPages, currentPage + range);
 
   if (currentPage > 1) {
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${currentPage - 1})">Previous</button>`;
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${
+      currentPage - 1
+    })">Previous</button>`;
   }
 
   if (startPage > 1) {
@@ -117,7 +133,9 @@ function updatePaginationControls() {
   }
 
   for (let i = startPage; i <= endPage; i++) {
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${i})" ${
+      i === currentPage ? 'class="active"' : ""
+    }>${i}</button>`;
   }
 
   if (endPage < totalPages) {
@@ -128,10 +146,11 @@ function updatePaginationControls() {
   }
 
   if (currentPage < totalPages) {
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${currentPage + 1})">Next</button>`;
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${
+      currentPage + 1
+    })">Next</button>`;
   }
 }
-
 
 async function deleteExpense(id) {
   const token = JSON.parse(localStorage.getItem("token"));
@@ -140,11 +159,9 @@ async function deleteExpense(id) {
 
     loadExpenses(); // TODO: Reload expenses
   } catch (err) {
-    alert("Failed to delete expense. Please try again.");
-    console.error(err.message);
+    messenger(err.message, false);
   }
 }
-
 
 async function premiumButton(isPremium) {
   if (isPremium) {

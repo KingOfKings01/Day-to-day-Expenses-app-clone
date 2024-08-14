@@ -67,7 +67,6 @@ User.generateToken = function (user) {
 User.verifyToken = function (token) {
   try {
     const value = jwt?.verify(token, process.env.JWT_SECRET);
-    // console.log(value);
     return value;
   } catch (error) {
     return null; // Handle token verification failure

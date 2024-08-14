@@ -1,5 +1,5 @@
 const { User, Order, Downloaded } = require("../relations/Relation");
-const Razorpay = require("razorpay");
+const PaymentService = require('../services/paymentService');
 
 // Create a new User
 exports.createUser = async (req, res) => {
@@ -66,30 +66,25 @@ exports.protectedRoute = async (req, res) => {
   }
 };
 
-//Todo: Buy Premium (order creation)
+
 exports.buyPremium = async (req, res) => {
   try {
-    const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
-    });
+    // Define the order details
+    const amount = 200; // Amount in INR
+    const receipt = `order_rcptid_${req.user.id}_${Date.now()}`;
 
-    const options = {
-      amount: 200 * 100, //* Amount in Paise (e.g., 500 INR)
-      currency: "INR",
-      receipt: `order_rcptid_${req.user.id}_${Date.now()}`,
-    };
+    // Create the Razorpay order using the PaymentService
+    const order = await PaymentService.createOrder(amount, 'INR', receipt);
 
-    const order = await razorpay.orders.create(options);
+    // Save the order ID in the user's order history
     await req.user.createOrder({ order_id: order.id });
 
-    return res
-      .status(200)
-      .json({
-        order,
-        user: { username: req.user.username, email: req.user.email },
-      });
+    return res.status(200).json({
+      order,
+      user: { username: req.user.username, email: req.user.email },
+    });
   } catch (error) {
+    console.error('Error in buyPremium controller:', error);
     return res.status(500).json({ message: "Error creating order" });
   }
 };

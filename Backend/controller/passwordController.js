@@ -1,48 +1,37 @@
 const { User, ForgotPasswordRequest } = require("../relations/Relation");
-const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
 const form = require("../view/form");
+const EmailService = require('../services/emailService');
 
 exports.forgotPassword = async (req, res) => {
   const userEmail = req.body.email;
 
-  //Todo: Find the user by email
   try {
+    // Find the user by email
     const user = await User.findOne({ where: { email: userEmail } });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    //Todo: Register user's reset password request and set uuid.
+    // Register user's reset password request and set UUID
     const uuid = uuidv4();
-    user.createForgotPasswordRequest({ id: uuid, isActive: true });
+    await user.createForgotPasswordRequest({ id: uuid, isActive: true });
 
-    //Todo: Send the email
-    const transporter = nodemailer.createTransport({
-      secure: true,
-      host: "smtp.gmail.com",
-      port: 465,
-      auth: {
-        user: process.env.EMAIL, //* Your email address
-        pass: process.env.PASSWORD, //* Your email password
-      },
-    });
-
-    //Todo: Define the email options
-    const mailOptions = {
-      to: userEmail, //* Recipient's email address (from the request)
-      subject: "Password Reset Request",
-      html: `
+    // Define the email content
+    const emailSubject = "Password Reset Request";
+    const emailHtml = `
       <p>Hi ${user.username},</p>
-      <p>Please click the <a href="http://localhost:4000/password/reset-password/${uuid}">link</a> to reset your password.</p>`,
-    };
+      <p>Please click the <a href="http://localhost:4000/password/reset-password/${uuid}">link</a> to reset your password.</p>`;
 
-    //Todo: Send the email
-    const info = await transporter.sendMail(mailOptions);
+    // Send the email using the EmailService
+    await EmailService.sendEmail(userEmail, emailSubject, emailHtml);
 
     return res.status(200).json({ message: "Password reset email sent" });
   } catch (error) {
+    console.error('Error in forgotPassword controller:', error);
     return res.status(500).json({ message: "Error sending email" });
   }
 };
+
+
 
 exports.resetPassword = async (req, res) => {
   //Todo: Send reset password form

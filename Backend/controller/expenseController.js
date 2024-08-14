@@ -10,15 +10,7 @@ exports.createExpense = async (req, res) => {
   try {
     const { amount, description, category } = req.body;
 
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = User.verifyToken(token);
-
-    const user = await User.findOne({ where: { id: decoded.id }, transaction });
-    if (!user) {
-      await transaction.rollback();
-      return res.status(404).json({ message: "User not found" });
-    }
-
+    const user = req.user
     const expense = await user.createExpense(
       {
         amount,
@@ -40,26 +32,39 @@ exports.createExpense = async (req, res) => {
   }
 };
 
-// Get all Expenses for a User
-
+// Get all Expenses for a User with pagination
 exports.getExpenses = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = User?.verifyToken(token);
+    const user = req.user
+    
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
 
-    const user = await User.findOne({ where: { id: decoded.id } });
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const expenses = await user.getExpenses();
+  
+    const { rows: expenses, count } = await Expense.findAndCountAll({
+      where: { userId: user.id },
+      limit,
+      offset,
+    });
 
     const isPremium = await user.isPremium; // todo: To show premium features to the frontend.
 
-    res.json({ expenses, isPremium });
+    res.json({
+      expenses,
+      isPremium,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(count / limit),
+        totalItems: count,
+        itemsPerPage: limit,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 //todo: Delete expense
 exports.deleteExpense = async (req, res) => {

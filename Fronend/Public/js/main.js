@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       "welcome"
     ).innerText = `Welcome, ${username}! \n${message}`;
 
-    loadExpenses();
+    loadExpenses(currentPage);
   } catch (err) {
     messenger(err.message, false);
   }
@@ -51,21 +51,31 @@ async function handleFormSubmit(event) {
   }
 }
 
-async function loadExpenses() {
+let currentPage = 1;
+let totalPages = 1; // Total number of pages, initially set to 1
+const limit = 2; // Number of items per page
+
+async function loadExpenses(page = 1) {
+  if (page < 1 || page > totalPages) return;
   const token = JSON.parse(localStorage.getItem("token"));
   try {
-    const expenses = await fetchUserExpenses(token);
-    
+    const { expenses, pagination } = await fetchUserExpenses(token, page, limit);
     displayExpenses(expenses);
-  } catch (err) {
-    messenger(err.message, false);
+
+    currentPage = pagination.currentPage;
+    totalPages = pagination.totalPages;
+
+    // Update pagination controls
+    updatePaginationControls();
+  } catch (error) {
+    console.error(error.message);
   }
 }
 
 function displayExpenses(expenses) {
   const table = document.getElementById("expensesTableBody");
   let rows = "";
-  if (expenses.length == 0) {
+  if (expenses?.length == 0) {
     rows = "<tr><td colspan='5'>No Expenses</td></tr>";
     table.innerHTML = rows;
     return; // exit the function early if no expenses found to avoid potential error
@@ -77,19 +87,57 @@ function displayExpenses(expenses) {
     <td>${expense.category}</td>
     <td>${expense.description}</td>
     <td>${new Date(expense.createdAt).toLocaleString()}</td>
-    <td><button class="btn btn-delete" onclick="deleteExpense(${expense.id})">Delete</button></td>
+    <td><button class="btn btn-delete" onclick="deleteExpense(${
+      expense.id
+    })">Delete</button></td>
     </tr>
     `;
   });
   table.innerHTML = rows;
 }
 
+
+function updatePaginationControls() {
+  const pageNumbersContainer = document.getElementById('page-numbers');
+  pageNumbersContainer.innerHTML = '';
+
+  const range = 2; // Number of page links to show before and after the current page
+  const startPage = Math.max(1, currentPage - range);
+  const endPage = Math.min(totalPages, currentPage + range);
+
+  if (currentPage > 1) {
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${currentPage - 1})">Previous</button>`;
+  }
+
+  if (startPage > 1) {
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(1)">1</button>`;
+    if (startPage > 2) {
+      pageNumbersContainer.innerHTML += `<span>...</span>`;
+    }
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      pageNumbersContainer.innerHTML += `<span>...</span>`;
+    }
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${totalPages})">${totalPages}</button>`;
+  }
+
+  if (currentPage < totalPages) {
+    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${currentPage + 1})">Next</button>`;
+  }
+}
+
+
 async function deleteExpense(id) {
-  
   const token = JSON.parse(localStorage.getItem("token"));
   try {
-    await deletingExpense(token, id)
-    
+    await deletingExpense(token, id);
+
     loadExpenses(); // TODO: Reload expenses
   } catch (err) {
     alert("Failed to delete expense. Please try again.");
@@ -97,19 +145,13 @@ async function deleteExpense(id) {
   }
 }
 
+
 async function premiumButton(isPremium) {
-  // Handle premium button visibility
   if (isPremium) {
     document.getElementById("premiumButton").style.display = "none";
     document.body.style.backgroundImage =
       "linear-gradient(111.4deg, rgba(238,113,113,1) 1%, rgba(246,215,148,1) 58%)";
-
-    //***************************** PREMIUM ********************************\\
-    // fetchModalTable();
   } else {
     document.getElementById("premiumButton").style.display = "block";
-    
-    //!  ????????????????????????????????????
-    // document.getElementById("leader-board").innerHTML = ""; // Clear leaderboard if not premium
   }
 }

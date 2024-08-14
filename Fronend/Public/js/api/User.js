@@ -35,7 +35,7 @@ async function createExpense(token, data) {
   }
 }
 
-async function fetchUserExpenses(token) {
+async function fetchUserExpenses(token, page = 1, limit = 10) {
   try {
     const response = await axios.get(
       `http://localhost:4000/expense/getExpenses`,
@@ -43,10 +43,14 @@ async function fetchUserExpenses(token) {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          page,
+          limit,
+        },
       }
     );
-
-    return response.data.expenses;
+    console.log(response.data);
+    return response.data;
   } catch (err) {
     throw new Error(
       err?.response?.data?.message ||

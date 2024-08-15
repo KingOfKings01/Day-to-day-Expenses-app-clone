@@ -72,6 +72,13 @@ body {
   }
 }
 
+
+@media screen and (min-width: 768px) {
+  .containers{
+    margin: 0 20vw;
+  }
+}
+
 `
 
 const form = (id) => `

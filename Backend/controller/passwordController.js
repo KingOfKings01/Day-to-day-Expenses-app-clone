@@ -5,7 +5,6 @@ const EmailService = require("../services/emailService");
 
 exports.forgotPassword = async (req, res) => {
   const userEmail = req.body.email;
-
   try {
     // Find the user by email
     const user = await User.findOne({ where: { email: userEmail } });
@@ -42,6 +41,7 @@ exports.resetPassword = async (req, res) => {
       return res.send(
         "<center><h1>Password reset request has expired!</h1></center>"
       );
+
     await userRequest.update({ isActive: false });
 
     res.status(200).send(form(id));
@@ -66,9 +66,6 @@ exports.updatePassword = async (req, res) => {
 
     const user = await User.findByPk(userRequest.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-
-    await user.update({ password: req.body.newPassword });
-    await userRequest.update({ isActive: true });
 
     res.status(200).send("<center> <h1>Password updated</h1> </center>");
   } catch (err) {

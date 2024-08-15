@@ -1,4 +1,4 @@
-async function pay(token) {
+async function Buy(token) {
   try {
     const response = await axios.post(
       "http://localhost:4000/user/buy-premium",
@@ -9,15 +9,16 @@ async function pay(token) {
         },
       }
     );
+    return response.data;
   } catch (err) {
-    throw new Error("Failed to buy premium. Please try again later.");
+    throw new Error(err?.data?.message || "Failed to buy premium. Please try again later.");
   }
 }
 
-async function order(data) {
+async function orderHandler(data) {
   try {
     await axios.post("http://localhost:4000/user/update-order", data);
   } catch (err) {
-    throw new Error("Failed to update order. Please try again later.");
+    throw new Error(err?.data?.message || "Failed to update order. Please try again later.");
   }
 }

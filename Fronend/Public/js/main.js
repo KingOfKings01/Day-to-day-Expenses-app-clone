@@ -18,10 +18,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     PremiumHandler(isPremium);
 
     // Set the welcome message
-    const message = isPremium ? "Thank you for being a Premium Member!" : "";
+    const message = isPremium ? "<p>Thank you for being a Premium Member!</p>" : "";
     document.getElementById(
       "welcome"
-    ).innerText = `Welcome, ${username}! \n${message}`;
+    ).innerHTML = `<h4>Welcome, ${username}!</h4> ${message}`;
 
     loadExpenses(currentPage);
   } catch (err) {

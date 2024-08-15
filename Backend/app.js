@@ -11,10 +11,10 @@ const passwordRoutes = require("./routes/passwordRouter");
 const app = express();
 
 const corsOptions = {
-  origin: "http://127.0.0.1:5500", //todo: Allow only this origin
-  methods: "GET,POST,PUT,DELETE",
-  allowedHeaders: ["Content-Type", "Authorization"], //* Allow only specific headers
-  optionsSuccessStatus: 200, //* Some legacy browsers choke on 204
+  origin: process.env.CORS_ORIGIN, // Allow only this origin
+  methods: process.env.CORS_METHODS, // Allow only specific methods
+  allowedHeaders: process.env.CORS_ALLOWED_HEADERS.split(","), // Allow only specific headers
+  optionsSuccessStatus: parseInt(process.env.CORS_SUCCESS_STATUS), // Some legacy browsers choke on 204
 };
 
 app.use(helmet())

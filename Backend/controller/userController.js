@@ -1,5 +1,5 @@
 const { User, Order, Downloaded } = require("../relations/Relation");
-const PaymentService = require('../services/paymentService');
+const PaymentService = require("../services/paymentService");
 
 // Create a new User
 exports.createUser = async (req, res) => {
@@ -22,9 +22,8 @@ exports.createUser = async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
     } else {
-      
       //todo: hook will be called when user is created from encrypting password.
-      const user = await User.create(data);  
+      const user = await User.create(data);
 
       const token = User.generateToken({
         id: user.id,
@@ -60,12 +59,13 @@ exports.loginUser = async (req, res) => {
 // Protected route example using verifyToken middleware
 exports.protectedRoute = async (req, res) => {
   try {
-    return res.status(200).json({ username: req.user.username, isPremium: req.user.isPremium });
+    return res
+      .status(200)
+      .json({ username: req.user.username, isPremium: req.user.isPremium });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 
 exports.buyPremium = async (req, res) => {
   try {
@@ -74,17 +74,26 @@ exports.buyPremium = async (req, res) => {
     const receipt = `order_rcptid_${req.user.id}_${Date.now()}`;
 
     // Create the Razorpay order using the PaymentService
-    const order = await PaymentService.createOrder(amount, 'INR', receipt);
-
+    const order = await PaymentService.createOrder(amount, "INR", receipt);
+    const orderInfo = {
+      name: "Day-to-Day",
+      description: "Premium Plan",
+      image: "",
+    };
     // Save the order ID in the user's order history
     await req.user.createOrder({ order_id: order.id });
 
     return res.status(200).json({
       order,
-      user: { username: req.user.username, email: req.user.email },
+      orderInfo,
+      user: {
+        username: req.user.username,
+        email: req.user.email,
+        contact: "9999999999",
+      },
     });
   } catch (error) {
-    console.error('Error in buyPremium controller:', error);
+    console.error("Error in buyPremium controller:", error);
     return res.status(500).json({ message: "Error creating order" });
   }
 };
@@ -115,15 +124,11 @@ exports.updateOrder = async (req, res) => {
 exports.getUsersWithTotalExpenses = async (req, res) => {
   try {
     const usersWithExpenses = await User.findAll({
-      attributes: [
-        'username',
-        'totalExpense',  
-      ],
+      attributes: ["username", "totalExpense"],
     });
 
     //todo: Sort the users by total expenses in descending order
     usersWithExpenses.sort((a, b) => b.totalExpense - a.totalExpense);
-    
 
     res.status(200).json(usersWithExpenses);
   } catch (error) {
@@ -131,16 +136,15 @@ exports.getUsersWithTotalExpenses = async (req, res) => {
   }
 };
 
-
 exports.getDownloadHistory = async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const downloadHistory = await Downloaded.findAll({
-        where: { userId: userId },
-        attributes: ["fileName", "createdAt", "url"]
-      });
-      res.status(200).json(downloadHistory);
-    } catch (error) {
-      res.status(500).json({ message: "Internal Server Error", error });
-    }
-}
+  try {
+    const userId = req.user.id;
+    const downloadHistory = await Downloaded.findAll({
+      where: { userId: userId },
+      attributes: ["fileName", "createdAt", "url"],
+    });
+    res.status(200).json(downloadHistory);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error });
+  }
+};

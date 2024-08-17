@@ -31,6 +31,3 @@ build/
 # packages
 package-lock.json
 package.json
-
-# ignore frontend project
-Fronend/

@@ -1,6 +1,6 @@
 const { User, ForgotPasswordRequest } = require("../relations/Relation");
 const { v4: uuidv4 } = require("uuid");
-const form = require("../view/form");
+const form = require("../templet/form");
 const EmailService = require("../services/emailService");
 
 exports.forgotPassword = async (req, res) => {

@@ -82,7 +82,7 @@ exports.buyPremium = async (req, res) => {
     };
     // Save the order ID in the user's order history
     await req.user.createOrder({ order_id: order.id });
-
+    
     return res.status(200).json({
       order,
       orderInfo,

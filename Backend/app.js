@@ -12,7 +12,20 @@ const passwordRoutes = require("./routes/passwordRouter");
 const app = express();
 
 // Security Headers
-app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://checkout.razorpay.com/"],
+      frameSrc: ["'self'", "https://api.razorpay.com/"],
+      // other directives if needed
+    },
+  })
+);
+
+
+
+
 
 // CORS Configuration
 const corsOptions = {
@@ -36,31 +49,15 @@ app.use("/password", passwordRoutes);
 app.use("/expense", expenseRoutes);
 
 // Serve HTML files
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public/views/home.html'));
-});
-
-app.get("/auth/forgotPassword", (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public/views/auth/forgotPassword.html'));
-});
-
-app.get("/auth/login", (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public/views/auth/login.html'));
-});
-
-app.get("/auth/singeln", (req, res) => {
-  res.sendFile(path.join(__dirname, 'Public/views/auth/singeln.html'));
-});
-
-// Handle 404 (not found) errors
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(__dirname, 'Public/views/404.html')); // Create a 404.html in your views directory for a custom 404 page
-});
+app.use((req, res)=>{
+  res.sendfile(path.join(__dirname, `Public/${req.url}`))
+})
 
 // Database Sync
 async function initializeDatabase() {
   await sequelize.sync({ force: false });
 }
+
 initializeDatabase();
 
 // Start the server

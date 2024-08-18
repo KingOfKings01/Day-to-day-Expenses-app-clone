@@ -1,3 +1,10 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const element = document.querySelector('#auth-form')
+  if (element)
+    element.addEventListener('submit', handleAuthorization);
+})
+
+
 async function handleAuthorization(event) {
   event.preventDefault();
   const username = document.getElementById("username")?.value;
@@ -20,10 +27,10 @@ async function handleAuthorization(event) {
 
 function success(token) {
   localStorage.setItem("token", JSON.stringify(token));
-  window.location.href = "../../views/home.html";
+  window.location.href = "../views/home.html";
 }
 
 function logout() {
   localStorage.clear();
-  window.location.href = "../../../Fronend/views/auth/login.html";
+  window.location.href = "../views/login.html";
 }

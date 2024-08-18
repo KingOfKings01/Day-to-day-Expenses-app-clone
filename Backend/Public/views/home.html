@@ -3,20 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Day-to-day Expenses</title>
-    <link rel="stylesheet" href="../Public/css/home.css" />
-    <link rel="stylesheet" href="../Public/css/pagination.css" />
-    <link rel="stylesheet" href="../Public/css/message-box.css" />
+    <link rel="stylesheet" href="../css/home.css" />
+    <link rel="stylesheet" href="../css/pagination.css" />
+    <link rel="stylesheet" href="../css/message-box.css" />
   </head>
   <body>
     <div id="alert-box"></div>
     <div id="premiumButton">
-      <button onclick="buyPremium()">Buy Premium Membership</button>
+      <button id="buyPremium">Buy Premium Membership</button>
     </div>
 
     <div class="container">
       <div class="btn-logout">
-        <button onclick="logout()">Logout</button>
+        <button id="logout">Logout</button>
       </div>
 
       <h3 id="welcome">Welcome</h3>
@@ -25,7 +26,6 @@
       <div id="modal-table"></div>
 
       <form
-        onsubmit="handleFormSubmit(event)"
         class="form-controller"
         id="expenseForm"
         method="post"
@@ -60,7 +60,6 @@
           <div class="limit-selector">
             Rows per page:
             <select
-              onchange="numberOfPages()"
               name="number-of-page"
               id="number-of-page"
             >
@@ -95,17 +94,23 @@
       </div>
     </div>
 
-    <script src="../Public/js/api/User.js"></script>
-    <script src="../Public/js/api/Razorpay.js"></script>
-    <script src="../Public/js/api/Premium.js"></script>
+    <!-- APIs -->
+    <script src="../js/api/User.js"></script>
+    <script src="../js/api/Razorpay.js"></script>
+    <script src="../js/api/Premium.js"></script>
 
-    <script src="../Public/js/buyPremium.js"></script>
-    <script src="../Public/js/messenger.js"></script>
-    <script src="../Public/js/main.js"></script>
-    <script src="../Public/js/authorization.js"></script>
-    <script src="../Public/js/Primiums/premiumFunctions.js"></script>
+    <!-- DOM and API calls -->
+    <script src="../js/buyPremium.js"></script>
+    <script src="../js/messenger.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/Primiums/premiumFunctions.js"></script>
+    <script src="../js/Primiums/hestory.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <!-- logout -->
+    <script src="../js/authorization.js"></script>
+
+    <!-- lib -->
+    <script src="../js/lib/axios.min.js"></script>
+    <script src="../js/lib/checkout.js"></script>
   </body>
 </html>

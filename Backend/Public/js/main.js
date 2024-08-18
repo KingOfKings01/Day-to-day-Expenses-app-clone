@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", async () => {
+
+  document.querySelector("#expenseForm").addEventListener('submit', handleFormSubmit);
+  document.querySelector("#logout").addEventListener('click', logout);
+  document.querySelector("#buyPremium").addEventListener('click', buyPremium);
+  document.querySelector("#number-of-page").addEventListener('change', numberOfPages);
+
+
   const storedValue = localStorage.getItem("numberOfPages");
   if (storedValue) {
     document.getElementById("number-of-page").value = storedValue;
@@ -7,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const token = JSON.parse(localStorage.getItem("token"));
 
   if (!token) {
-    window.location.href = "../views/login.html";
+    window.location.href = "../views/auth/login.html";
     return;
   }
 
@@ -37,7 +44,7 @@ async function handleFormSubmit(event) {
   const data = {
     amount: amount.value,
     category: category.value,
-    description: description.value,
+    description: description.value
   };
 
   const token = JSON.parse(localStorage.getItem("token"));
@@ -90,25 +97,34 @@ async function loadExpenses(page = 1) {
 function displayExpenses(expenses) {
   const table = document.getElementById("expensesTableBody");
   let rows = "";
-  if (expenses?.length == 0) {
+  if (expenses?.length === 0) {
     rows = "<tr><td colspan='5'>No Expenses</td></tr>";
     table.innerHTML = rows;
     return; // exit the function early if no expenses found to avoid potential error
   }
+  
   expenses.forEach((expense) => {
     rows += `
     <tr>
-    <td>${expense.amount}</td>
-    <td>${expense.category}</td>
-    <td>${expense.description}</td>
-    <td>${new Date(expense.createdAt).toLocaleString()}</td>
-    <td><button class="btn btn-delete" onclick="deleteExpense(${
-      expense.id
-    })">Delete</button></td>
+      <td>${expense.amount}</td>
+      <td>${expense.category}</td>
+      <td>${expense.description}</td>
+      <td>${new Date(expense.createdAt).toLocaleString()}</td>
+      <td><button class="btn btn-delete" data-id="${expense.id}">Delete</button></td>
     </tr>
     `;
   });
+  
   table.innerHTML = rows;
+  
+  // Add event listeners to all delete buttons
+  const deleteButtons = document.querySelectorAll(".btn-delete");
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const id = event.target.getAttribute('data-id');
+      deleteExpense(id);
+    });
+  });
 }
 
 function updatePaginationControls() {
@@ -120,20 +136,18 @@ function updatePaginationControls() {
   const endPage = Math.min(totalPages, currentPage + range);
 
   if (currentPage > 1) {
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${
-      currentPage - 1
-    })">Previous</button>`;
+    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${currentPage - 1}">Previous</button>`;
   }
 
   if (startPage > 1) {
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(1)">1</button>`;
+    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="1">1</button>`;
     if (startPage > 2) {
       pageNumbersContainer.innerHTML += `<span>...</span>`;
     }
   }
 
   for (let i = startPage; i <= endPage; i++) {
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${i})" ${
+    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${i}" ${
       i === currentPage ? 'class="active"' : ""
     }>${i}</button>`;
   }
@@ -142,14 +156,21 @@ function updatePaginationControls() {
     if (endPage < totalPages - 1) {
       pageNumbersContainer.innerHTML += `<span>...</span>`;
     }
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${totalPages})">${totalPages}</button>`;
+    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${totalPages}">${totalPages}</button>`;
   }
 
   if (currentPage < totalPages) {
-    pageNumbersContainer.innerHTML += `<button onclick="loadExpenses(${
-      currentPage + 1
-    })">Next</button>`;
+    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${currentPage + 1}">Next</button>`;
   }
+
+  // Add event listeners to pagination buttons
+  const paginationButtons = document.querySelectorAll(".pagination-button");
+  paginationButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const page = parseInt(event.target.getAttribute('data-page'), 10);
+      loadExpenses(page);
+    });
+  });
 }
 
 async function deleteExpense(id) {
@@ -168,6 +189,9 @@ async function premiumButton(isPremium) {
     document.getElementById("premiumButton").style.display = "none";
     document.body.style.backgroundImage =
       "linear-gradient(111.4deg, rgba(238,113,113,1) 1%, rgba(246,215,148,1) 58%)";
+
+    // Enable premium features
+    PremiumHandler(isPremium);
   } else {
     document.getElementById("premiumButton").style.display = "block";
   }

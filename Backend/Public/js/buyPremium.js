@@ -12,6 +12,7 @@ class PremiumPurchase {
       const { user, order,orderInfo } = await this.initiatePayment();
       this.createRazorpayOrder(user, order, orderInfo);
     } catch (err) {
+      console.error(err)
       this.showMessage("Something want wrong! Please try again later.", false);
     }
   }

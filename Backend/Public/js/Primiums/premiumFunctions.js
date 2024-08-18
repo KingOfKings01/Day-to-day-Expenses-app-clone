@@ -1,9 +1,15 @@
 function PremiumHandler(isPremium) {
   if (!isPremium) return;
-  document.querySelector(
-    "#modal-board"
-  ).innerHTML = ` <button class="btn btn-first" onclick="showLeaderBoard()">Show Leader board</button>
-    <button class="btn btn-second" onclick="downloadReportBoard()">Download Report</button>`;
+
+  const modalBoard = document.querySelector("#modal-board");
+  modalBoard.innerHTML = `
+    <button class="btn btn-first" id="show-leaderboard-btn">Show Leader board</button>
+    <button class="btn btn-second" id="download-report-btn">Download Report</button>
+  `;
+
+  // Add event listeners after updating the inner HTML
+  document.getElementById("show-leaderboard-btn").addEventListener('click', showLeaderBoard);
+  document.getElementById("download-report-btn").addEventListener('click', downloadReportBoard);
 }
 
 const modalHtml = (title, heads, rows, btn = "") => {
@@ -26,7 +32,7 @@ const modalHtml = (title, heads, rows, btn = "") => {
   return `
   <div class="modal">
     <dialog id="modal">
-      <button class="close-btn" onclick="closeModal()">×</button>
+      <button class="close-btn" id="close-modal-btn">×</button>
       ${btn}
       <h4>${title}</h4>
       <div class="modal-table">
@@ -58,11 +64,13 @@ async function fetchModalTable() {
     }));
 
     // Update the leader board section in the DOM
-
     const heads = ["User", "Total Expense"];
     const leaderBoardModal = modalHtml("Leader Board", heads, leaderBoard);
 
     document.querySelector("#modal-table").innerHTML = leaderBoardModal;
+
+    // Add event listener for the close button
+    document.getElementById("close-modal-btn").addEventListener('click', closeModal);
   } catch (err) {
     messenger(err.message, false);
   }
@@ -87,29 +95,32 @@ async function downloadReportBoard() {
       file.url = `<a class="btn btn-download" href="${file.url}" download>Download</a>`;
     });
     const heads = ["Filename", "Date", "Download"];
-
-    const btn = `<button class="btn btn-download" onclick="downloadReport()">New Report</button>`;
+    const btn = `<button class="btn btn-download" id="new-report-btn">New Report</button>`;
 
     let modal = modalHtml("Download history", heads, files, btn);
 
     document.querySelector("#modal-table").innerHTML = modal;
-
+    
     const dialog = document.querySelector("#modal");
     dialog.showModal();
+
+    // Add event listeners
+    document.getElementById("close-modal-btn").addEventListener('click', closeModal);
+    document.getElementById("new-report-btn").addEventListener('click', downloadReport);
   } catch (err) {
     messenger(err.message, false);
   }
 }
 
 async function downloadReport() {
-  try{
+  try {
     const token = JSON.parse(localStorage.getItem("token"));
     const fileUrl = await fetchReport(token);
     const a = document.createElement("a");
     a.href = fileUrl;
     a.click(); // download report
-    
-    closeModal() // close modal
+
+    closeModal(); // close modal
   } catch (err) {
     console.log(err);
     messenger(err.message, false);

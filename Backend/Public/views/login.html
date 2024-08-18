@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Day-to-day Expenses</title>
-    <link rel="stylesheet" href="../../Public/css/auth.css">
-    <link rel="stylesheet" href="../../Public/css/message-box.css">
+    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="../css/message-box.css">
   </head>
   <body>
     <div id="alert-box">
@@ -13,8 +13,8 @@
     </div>
     <div class="containers">
       <h1 class="title">Login</h1>
-      <form onsubmit="handleAuthorization(event)" method="post" class="form-controller">
-
+      <form onsubmit="handleAuthorization(event)" method="post" id="auth-form" class="form-controller">
+        
         <div class="input-controller">
           <label for="email">Email:</label>
           <input type="email" id="email" name="email" required />
@@ -23,15 +23,16 @@
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" required />
         </div>
-        <button type="submit" class="btn btn-submit">Sign In</button>
+        <button type="submit" class="btn btn-submit">Login</button>
       </form>
       <div class="centered">Forgot password, click <a href="./forgotPassword.html">here</a></div>
-      <div class="centered">Don't have an acount? <a href="./singeIn.html">Sing In</a></div> 
+      <div class="centered">Don't have an account? <a href="./singeIn.html">Sing In</a></div> 
     </div>
 
-    <script src="../../Public/js/api/Auth.js"></script>
-    <script src="../../Public/js/messenger.js"></script>
-    <script src="../../Public/js/authorization.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/api/Auth.js"></script>
+    <script src="../js/messenger.js"></script>
+    <script src="../js/authorization.js"></script>
+    <script src="../js/lib/axios.min.js"></script>
+    
   </body>
 </html>

@@ -1,7 +1,7 @@
 async function fetchLeaderBoard(token) {
   try {
     const response = await axios.get(
-      "http://43.204.35.243:4000/user/leader-board",
+      "http://localhost:4000/user/leader-board",
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -21,7 +21,7 @@ async function fetchLeaderBoard(token) {
 async function fetchDownloadHistory(token) {
   try {
     const response = await axios.get(
-      "http://43.204.35.243:4000/user/download-history",
+      "http://localhost:4000/user/download-history",
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -37,7 +37,7 @@ async function fetchDownloadHistory(token) {
 
 async function fetchReport(token){
   try{
-    const response = await axios.get("http://43.204.35.243:4000/expense/download", {
+    const response = await axios.get("http://localhost:4000/expense/download", {
       headers: { Authorization: `Bearer ${token}` },
     });
 

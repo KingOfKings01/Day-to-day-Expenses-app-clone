@@ -15,9 +15,9 @@ const router = express.Router();
 
 router.post("/login", loginUser);
 router.post("/sing-in", createUser);
-router.post("/update-order", updateOrder); //! Protect
 
 // Use the verifyToken middleware for protected routes
+router.post("/update-order",verifyToken, updateOrder);
 router.get("/leader-board", verifyToken, getUsersWithTotalExpenses);
 router.post("/buy-premium", verifyToken, buyPremium);
 router.post("/protected-route", verifyToken, protectedRoute);

@@ -18,7 +18,7 @@ exports.forgotPassword = async (req, res) => {
     const emailSubject = "Password Reset Request";
     const emailHtml = `
       <p>Hi ${user.username},</p>
-      <p>Please click the <a href="http://localhost:4000/password/reset-password/${uuid}">link</a> to reset your password.</p>`;
+      <p>Please click the <a href="http://13.233.70.44/password/reset-password/${uuid}">link</a> to reset your password.</p>`;
 
     // Send the email using the EmailService
     await EmailService.sendEmail(userEmail, emailSubject, emailHtml);

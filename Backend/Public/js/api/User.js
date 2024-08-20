@@ -3,7 +3,7 @@ async function protected() {
 
   try {
     const response = await axios.post(
-      "http://localhost:4000/user/protected-route",
+      "http://13.233.70.44/user/protected-route",
       {},
       {
         headers: {
@@ -22,7 +22,7 @@ async function protected() {
 
 async function createExpense(token, data) {
   try {
-    await axios.post(`http://localhost:4000/expense/createExpense`, data, {
+    await axios.post(`http://13.233.70.44/expense/createExpense`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -38,7 +38,7 @@ async function createExpense(token, data) {
 async function fetchUserExpenses(token, page = 1, limit = 10) {
   try {
     const response = await axios.get(
-      `http://localhost:4000/expense/getExpenses`,
+      `http://13.233.70.44/expense/getExpenses`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -60,7 +60,7 @@ async function fetchUserExpenses(token, page = 1, limit = 10) {
 
 async function deletingExpense(token, id) {
   try {
-    await axios.delete(`http://localhost:4000/expense/${id}`, {
+    await axios.delete(`http://13.233.70.44/expense/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Include the token in the headers
       },

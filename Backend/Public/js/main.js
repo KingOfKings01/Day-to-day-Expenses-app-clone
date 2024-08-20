@@ -1,20 +1,22 @@
 document.addEventListener("DOMContentLoaded", async () => {
 
+  //todo: load events
   document.querySelector("#expenseForm").addEventListener('submit', handleFormSubmit);
   document.querySelector("#logout").addEventListener('click', logout);
   document.querySelector("#buyPremium").addEventListener('click', buyPremium);
   document.querySelector("#number-of-page").addEventListener('change', numberOfPages);
 
-
+  // todo: load pages limit
   const storedValue = localStorage.getItem("numberOfPages");
   if (storedValue) {
     document.getElementById("number-of-page").value = storedValue;
   }
 
+
   const token = JSON.parse(localStorage.getItem("token"));
 
   if (!token) {
-    window.location.href = "../views/auth/login.html";
+    window.location.href = "../views/login.html";
     return;
   }
 
@@ -51,14 +53,15 @@ async function handleFormSubmit(event) {
 
   try {
     await createExpense(token, data);
+    await loadExpenses();
 
-    loadExpenses();
     document.querySelector("#expenseForm").reset();
   } catch (err) {
     messenger(err.message, false);
   }
 }
 
+// TODO: Pagination
 let currentPage = 1;
 let totalPages = 1; // Total number of pages, initially set to 1
 // Number of items per page

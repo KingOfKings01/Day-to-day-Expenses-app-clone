@@ -31,20 +31,20 @@ exports.createExpense = async (req, res) => {
   }
 };
 
-//todo: Get all Expenses for a User with pagination
+// todo: Get all Expenses for a User with pagination and in reverse order
 exports.getExpenses = async (req, res) => {
   try {
-    const user = req.user
+    const user = req.user;
     
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
 
-  
     const { rows: expenses, count } = await Expense.findAndCountAll({
       where: { userId: user.id },
       limit,
       offset,
+      order: [['createdAt', 'DESC']], // Order by createdAt in descending order
     });
 
     const isPremium = await user.isPremium; // todo: To show premium features to the frontend.
@@ -63,6 +63,7 @@ exports.getExpenses = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 
 //todo: Delete expense

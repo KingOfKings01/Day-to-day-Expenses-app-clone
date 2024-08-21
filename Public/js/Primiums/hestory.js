@@ -12,6 +12,7 @@ async function downloadReport() {
       a.download = "my_expense.csv";
       a.click();
       
+      closeModal();
     } catch (err) {
       messenger("Failed to download report. Please try again.", false);
     }

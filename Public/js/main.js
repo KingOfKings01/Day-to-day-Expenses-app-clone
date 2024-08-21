@@ -58,6 +58,7 @@ async function handleFormSubmit(event) {
   try {
     await createExpense(token, data);
     await loadExpenses();
+    await updatePaginationControls()
 
     document.querySelector("#expenseForm").reset();
   } catch (err) {

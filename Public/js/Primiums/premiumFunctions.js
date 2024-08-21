@@ -111,18 +111,3 @@ async function downloadReportBoard() {
     messenger(err.message, false);
   }
 }
-
-async function downloadReport() {
-  try {
-    const token = JSON.parse(localStorage.getItem("token"));
-    const fileUrl = await fetchReport(token);
-    const a = document.createElement("a");
-    a.href = fileUrl;
-    a.click(); // download report
-    
-    closeModal(); // close modal
-  } catch (err) {
-    console.log(err);
-    messenger(err.message, false);
-  }
-}

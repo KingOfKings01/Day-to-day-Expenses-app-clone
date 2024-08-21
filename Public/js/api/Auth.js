@@ -1,7 +1,7 @@
 async function singIn(data) {
   try {
     const response = await axios.post(
-      "http://localhost:4000/user/sing-in",
+      "http://13.233.70.44/user/sing-in",
       data
     );
     return response.data.token;
@@ -16,7 +16,7 @@ async function singIn(data) {
 async function login(data) {
   try {
     const response = await axios.post(
-      "http://localhost:4000/user/login",
+      "http://13.233.70.44/user/login",
       data
     );
     return response.data.token;

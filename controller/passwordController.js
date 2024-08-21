@@ -67,6 +67,10 @@ exports.updatePassword = async (req, res) => {
     const user = await User.findByPk(userRequest.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    //Todo: password updating
+    await user.update({ password: req.body.newPassword }); 
+    await userRequest.update({ isActive: false });
+
     res.status(200).send("<center> <h1>Password updated</h1> </center>");
   } catch (err) {
     return res.status(500).json({ message: "Internal server error" });

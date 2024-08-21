@@ -82,7 +82,7 @@ exports.buyPremium = async (req, res) => {
     };
     // Save the order ID in the user's order history
     await req.user.createOrder({ order_id: order.id });
-    
+
     return res.status(200).json({
       order,
       orderInfo,
@@ -99,11 +99,22 @@ exports.buyPremium = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
+  console.log();
+  console.log();
+  console.log();
+  console.log();
+  console.log("Request to update order");
+  console.log();
+  console.log();
+  console.log();
+  console.log();
   const { order_id, status } = req.body;
   try {
     const order = await Order.findOne({ where: { order_id } });
-
-    if (order) {
+    
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
       // Update the order's status
       order.status = status; // e.g., "completed" or "failed"
       await order.save();
@@ -113,7 +124,7 @@ exports.updateOrder = async (req, res) => {
         user.isPremium = true; // Set isPremium to true
         await user.save();
       }
-    }
+    
   } catch (err) {
     return res.status(500).json({ message: "Unable to update member status" });
   }

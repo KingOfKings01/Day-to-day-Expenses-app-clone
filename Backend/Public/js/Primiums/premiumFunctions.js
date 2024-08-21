@@ -90,7 +90,7 @@ function closeModal() {
 async function downloadReportBoard() {
   const token = JSON.parse(localStorage.getItem("token"));
   try {
-    const files = await fetchDownloadHistory(token);
+    const files = await fetchDownloadHistory(token); // API
     files.forEach((file) => {
       file.url = `<a class="btn btn-download" href="${file.url}" download>Download</a>`;
     });
@@ -119,7 +119,7 @@ async function downloadReport() {
     const a = document.createElement("a");
     a.href = fileUrl;
     a.click(); // download report
-
+    
     closeModal(); // close modal
   } catch (err) {
     console.log(err);

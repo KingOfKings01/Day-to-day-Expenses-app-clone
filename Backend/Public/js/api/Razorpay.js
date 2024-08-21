@@ -1,7 +1,7 @@
 async function Buy(token) {
   try {
     const response = await axios.post(
-      "http://13.233.70.44/user/buy-premium",
+      "http://localhost:4000/user/buy-premium",
       {},
       {
         headers: {
@@ -18,16 +18,16 @@ async function Buy(token) {
   }
 }
 
-async function orderHandler(data) {
+async function orderHandler(data, token) {
   try {
-    await axios.post("http://13.233.70.44/user/update-order", data, {
+    await axios.post("http://localhost:4000/user/update-order", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
   } catch (err) {
     throw new Error(
-      err?.data?.message || "Failed to update order. Please try again later."
+       "Failed to update order. Please try again later."
     );
   }
 }

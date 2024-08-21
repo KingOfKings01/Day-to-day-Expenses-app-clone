@@ -8,8 +8,8 @@ async function handleForgotPassword(event) {
     // todo: disable submit button
     document.querySelector("#submit").disabled = true;
     messenger("Password reset link has been sent to your email", true);
-  } catch (error) {
-    const message = error?.response?.message || "Please try again later.";
+  } catch (err) {
+    const message = err?.message || "Please try again later.";
     messenger(message, false);
   }
 }

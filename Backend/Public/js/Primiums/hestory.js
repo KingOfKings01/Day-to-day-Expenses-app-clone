@@ -6,16 +6,13 @@ async function downloadReport() {
     }
   
     try {
-      const response = await axios.get("http://localhost:4000/expense/download", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const fileUrl = await downloadingReportApi(token)
       const a = document.createElement("a");
-      a.href = response.data.fileUrl;
+      a.href = fileUrl;
       a.download = "my_expense.csv";
       a.click();
       
     } catch (err) {
-      console.error(err);
       messenger("Failed to download report. Please try again.", false);
     }
   }
@@ -28,12 +25,7 @@ async function downloadReport() {
     }
     
     try {
-      const response = await axios.get("http://localhost:4000/user/download-history", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-  
-      console.table(response.data);
-      
+      await downloadHistoryApi(token);
     } catch (err){
       console.log(err);
       messenger("Failed to load download history. Please try again.", false);

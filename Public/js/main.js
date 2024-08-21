@@ -1,17 +1,19 @@
 document.addEventListener("DOMContentLoaded", async () => {
-
   //todo: load events
-  document.querySelector("#expenseForm").addEventListener('submit', handleFormSubmit);
-  document.querySelector("#logout").addEventListener('click', logout);
-  document.querySelector("#buyPremium").addEventListener('click', buyPremium);
-  document.querySelector("#number-of-page").addEventListener('change', numberOfPages);
+  document
+    .querySelector("#expenseForm")
+    .addEventListener("submit", handleFormSubmit);
+  document.querySelector("#logout").addEventListener("click", logout);
+  document.querySelector("#buyPremium").addEventListener("click", buyPremium);
+  document
+    .querySelector("#number-of-page")
+    .addEventListener("change", numberOfPages);
 
   // todo: load pages limit
   const storedValue = localStorage.getItem("numberOfPages");
   if (storedValue) {
     document.getElementById("number-of-page").value = storedValue;
   }
-
 
   const token = JSON.parse(localStorage.getItem("token"));
 
@@ -27,7 +29,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     PremiumHandler(isPremium);
 
     // Set the welcome message
-    const message = isPremium ? "<p>Thank you for being a Premium Member!</p>" : "";
+    const message = isPremium
+      ? "<p>Thank you for being a Premium Member!</p>"
+      : "";
     document.getElementById(
       "welcome"
     ).innerHTML = `<h4>Welcome, ${username}!</h4> ${message}`;
@@ -46,7 +50,7 @@ async function handleFormSubmit(event) {
   const data = {
     amount: amount.value,
     category: category.value,
-    description: description.value
+    description: description.value,
   };
 
   const token = JSON.parse(localStorage.getItem("token"));
@@ -65,7 +69,7 @@ async function handleFormSubmit(event) {
 let currentPage = 1;
 let totalPages = 1; // Total number of pages, initially set to 1
 // Number of items per page
-const limit = (localStorage.getItem("numberOfPages") || 5);
+const limit = localStorage.getItem("numberOfPages") || 5;
 
 function numberOfPages() {
   const selectElement = document.getElementById("number-of-page");
@@ -76,8 +80,8 @@ function numberOfPages() {
   loadExpenses();
 }
 
-async function loadExpenses(page=1) {
-  if ( page > totalPages) return;
+async function loadExpenses(page) {
+  if (page < 1 || page > totalPages) return;
   const token = JSON.parse(localStorage.getItem("token"));
   try {
     const { expenses, pagination } = await fetchUserExpenses(
@@ -105,7 +109,7 @@ function displayExpenses(expenses) {
     table.innerHTML = rows;
     return; // exit the function early if no expenses found to avoid potential error
   }
-  
+
   expenses.forEach((expense) => {
     rows += `
     <tr>
@@ -113,18 +117,20 @@ function displayExpenses(expenses) {
       <td>${expense.category}</td>
       <td>${expense.description}</td>
       <td>${new Date(expense.createdAt).toLocaleString()}</td>
-      <td><button class="btn btn-delete" data-id="${expense.id}">Delete</button></td>
+      <td><button class="btn btn-delete" data-id="${
+        expense.id
+      }">Delete</button></td>
     </tr>
     `;
   });
-  
+
   table.innerHTML = rows;
-  
+
   // Add event listeners to all delete buttons
   const deleteButtons = document.querySelectorAll(".btn-delete");
-  deleteButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
-      const id = event.target.getAttribute('data-id');
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const id = event.target.getAttribute("data-id");
       deleteExpense(id);
     });
   });
@@ -139,7 +145,9 @@ function updatePaginationControls() {
   const endPage = Math.min(totalPages, currentPage + range);
 
   if (currentPage > 1) {
-    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${currentPage - 1}">Previous</button>`;
+    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${
+      currentPage - 1
+    }">Previous</button>`;
   }
 
   if (startPage > 1) {
@@ -163,14 +171,16 @@ function updatePaginationControls() {
   }
 
   if (currentPage < totalPages) {
-    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${currentPage + 1}">Next</button>`;
+    pageNumbersContainer.innerHTML += `<button class="pagination-button" data-page="${
+      currentPage + 1
+    }">Next</button>`;
   }
 
   // Add event listeners to pagination buttons
   const paginationButtons = document.querySelectorAll(".pagination-button");
-  paginationButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
-      const page = parseInt(event.target.getAttribute('data-page'), 10);
+  paginationButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const page = parseInt(event.target.getAttribute("data-page"), 10);
       loadExpenses(page);
     });
   });

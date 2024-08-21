@@ -76,8 +76,8 @@ function numberOfPages() {
   loadExpenses();
 }
 
-async function loadExpenses(page = 1) {
-  if (page < 1 || page > totalPages) return;
+async function loadExpenses(page=1) {
+  if ( page > totalPages) return;
   const token = JSON.parse(localStorage.getItem("token"));
   try {
     const { expenses, pagination } = await fetchUserExpenses(

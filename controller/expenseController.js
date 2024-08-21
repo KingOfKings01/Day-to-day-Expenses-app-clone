@@ -1,10 +1,9 @@
 const { User, Expense } = require("../relations/Relation");
 const sequelize = require("../config/database");
-
 const { Parser } = require('json2csv');
 const AWSService = require('../services/awsService');
 
-// Create a new User
+//todo: Create a new User
 exports.createExpense = async (req, res) => {
   const transaction = await sequelize.transaction();
   try {
@@ -32,7 +31,7 @@ exports.createExpense = async (req, res) => {
   }
 };
 
-// Get all Expenses for a User with pagination
+//todo: Get all Expenses for a User with pagination
 exports.getExpenses = async (req, res) => {
   try {
     const user = req.user
@@ -105,6 +104,7 @@ exports.deleteExpense = async (req, res) => {
   }
 };
 
+//todo: Download Expenses Report
 exports.downloadExpenses = async (req, res) => {
   try {
     const userId = req.user.id;

@@ -12,11 +12,11 @@ Expense.belongsTo(User, { foreignKey: "userId" })
 User.hasMany(Order, { foreignKey: "userId" })
 Order.belongsTo(User, { foreignKey: "userId" })
 
-// User hasMany ForgotPasswordRequest
+// User hasMany Forgot Password Requests
 User.hasMany(ForgotPasswordRequest, { foreignKey: "userId" })
 ForgotPasswordRequest.belongsTo(User, { foreignKey: "userId"})
 
-// User hasMany Downloaded files
+// User hasMany Downloaded Reports
 User.hasMany(Downloaded, { foreignKey: "userId"})
 Downloaded.belongsTo(User, { foreignKey: "userId"})
 

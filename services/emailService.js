@@ -7,8 +7,8 @@ class EmailService {
       host: "smtp.gmail.com",
       port: 465,
       auth: {
-        user: process.env.EMAIL,  // Your email address
-        pass: process.env.PASSWORD,  // Your email password
+        user: process.env.EMAIL,  // My email address
+        pass: process.env.PASSWORD,  // My email password
       },
     });
   }

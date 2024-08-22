@@ -58,7 +58,6 @@ async function handleFormSubmit(event) {
   try {
     await createExpense(token, data);
     await loadExpenses();
-    await updatePaginationControls();
 
     document.querySelector("#expenseForm").reset();
   } catch (err) {
@@ -72,16 +71,12 @@ let totalPages = 1; // Total number of pages, initially set to 1
 // Number of items per page
 const limit = localStorage.getItem("numberOfPages") || 5;
 
-function numberOfPages() {
+async function numberOfPages() {
   const selectElement = document.getElementById("number-of-page");
   const selectedValue = selectElement.value;
-
   localStorage.setItem("numberOfPages", selectedValue);
 
-  loadExpenses();
-
-  // Update pagination controls
-  updatePaginationControls();
+  await loadExpenses();
 }
 
 async function loadExpenses(page) {

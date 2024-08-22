@@ -58,7 +58,7 @@ async function handleFormSubmit(event) {
   try {
     await createExpense(token, data);
     await loadExpenses();
-    await updatePaginationControls()
+    await updatePaginationControls();
 
     document.querySelector("#expenseForm").reset();
   } catch (err) {
@@ -79,6 +79,9 @@ function numberOfPages() {
   localStorage.setItem("numberOfPages", selectedValue);
 
   loadExpenses();
+
+  // Update pagination controls
+  updatePaginationControls();
 }
 
 async function loadExpenses(page) {

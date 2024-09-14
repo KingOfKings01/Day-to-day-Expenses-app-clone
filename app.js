@@ -8,6 +8,7 @@ const helmet = require("helmet");
 const userRoutes = require("./routes/userRouter");
 const expenseRoutes = require("./routes/expenseRouter");
 const passwordRoutes = require("./routes/passwordRouter");
+const { default: mongoose } = require("mongoose");
 
 const app = express();
 

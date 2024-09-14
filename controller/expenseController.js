@@ -138,12 +138,14 @@ exports.deleteExpense = async (req, res) => {
     const isPremium = user.isPremium; // For frontend
 
     await user.save({ session });
-    await expense.remove({ session });
+    
+    await Expense.findByIdAndDelete(expenseId).session(session);
 
     await session.commitTransaction();
     session.endSession();
     res.json({ message: "Expense deleted successfully", isPremium });
   } catch (err) {
+    console.error(err.message);
     await session.abortTransaction();
     session.endSession();
     res.status(500).json({ message: "Internal Server Error" });

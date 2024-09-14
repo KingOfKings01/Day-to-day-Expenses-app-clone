@@ -19,7 +19,7 @@ class PaymentService {
       const order = await this.razorpay.orders.create(options);
       return order;
     } catch (error) {
-      console.error('Error creating Razorpay order:', error);
+      console.error('Error creating Razorpay order:', error.message);
       throw error;
     }
   }

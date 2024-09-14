@@ -120,7 +120,7 @@ function displayExpenses(expenses) {
       <td>${expense.description}</td>
       <td>${new Date(expense.createdAt).toLocaleString()}</td>
       <td><button class="btn btn-delete" data-id="${
-        expense.id
+        expense._id
       }">Delete</button></td>
     </tr>
     `;

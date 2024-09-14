@@ -47,6 +47,7 @@ exports.createUser = async (req, res) => {
 
     res.status(200).json({ token });
   } catch (err) {
+    console.error(err.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -94,7 +95,7 @@ exports.buyPremium = async (req, res) => {
   try {
     // Define the order details
     const amount = 200; // Amount in INR
-    const receipt = `order_rcptid_${req.user.id}_${Date.now()}`;
+    const receipt = `order_rcptid_${req.user._id}_${Date.now()}`;
 
     // Create the Razorpay order using the PaymentService
     const order = await PaymentService.createOrder(amount, "INR", receipt);
@@ -129,7 +130,7 @@ exports.buyPremium = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error in buyPremium controller:", error);
+    console.error("Error in buyPremium controller:", error.message);
     return res.status(500).json({ message: "Error creating order" });
   }
 };
@@ -191,7 +192,7 @@ exports.getDownloadHistory = async (req, res) => {
     //   attributes: ["fileName", "createdAt", "url"],
     // });
     const downloadHistory = await Downloaded.find({ userId: userId }, 'fileName createdAt url').exec();
-    
+
     res.status(200).json(downloadHistory);
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error", error });

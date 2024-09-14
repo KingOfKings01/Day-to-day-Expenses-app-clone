@@ -9,7 +9,7 @@ class PremiumPurchase {
 
   async buyPremium() {
     try {
-      const { user, order,orderInfo } = await this.initiatePayment();
+      const { user, order, orderInfo } = await this.initiatePayment();
       this.createRazorpayOrder(user, order, orderInfo);
     } catch (err) {
       this.showMessage("Something want wrong! Please try again later.", false);

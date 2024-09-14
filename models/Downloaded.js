@@ -2,9 +2,19 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const DownloadedSchema = new Schema({
-  fileName: { type: String, required: true },
-  url: { type: String, required: true },
+const downloadedSchema = new Schema({
+  fileName: {
+    type: String,
+    required: true,
+  },
+  url: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User", // Reference to User model
@@ -12,7 +22,7 @@ const DownloadedSchema = new Schema({
   },
 });
 
-const Downloaded = mongoose.model("Downloaded", DownloadedSchema);
+const Downloaded = mongoose.model("Downloaded", downloadedSchema);
 module.exports = Downloaded;
 
 // const { DataTypes } = require("sequelize");

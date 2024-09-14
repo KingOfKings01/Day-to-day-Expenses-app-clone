@@ -23,7 +23,12 @@ const userSchema = new Schema({
   totalExpense:{
     type: Number,
     default: 0
-  }
+  },
+  orders: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Order", // Reference to the Order model
+  }],
+
 })
 
 // Pre-save hook to hash password before saving

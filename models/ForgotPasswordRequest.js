@@ -8,6 +8,10 @@ const forgotPasswordRequestSchema = new Schema({
     ref: "User",
     required: true,
   },
+  token: {
+    type: String,
+    required: true,
+  },
   isActive: {
     type: Boolean,
     required: true,

@@ -81,7 +81,7 @@ body {
 
 `
 
-const form = (id) => `
+const form = (token) => `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -97,7 +97,7 @@ const form = (id) => `
     <div class="containers">
       <h1 class="title">Set new password</h1>
       <form
-        action="/password/update-password/${id}"
+        action="/password/update-password/${token}"
         method="post"
         class="form-controller"
       >

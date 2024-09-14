@@ -4,8 +4,6 @@ const router = express.Router()
 
 //* After form submission
 router.post('/update-password/:uuid', updatePassword)
-
-
 router.post('/forgot-password', forgotPassword)
 router.use('/reset-password/:uuid', resetPassword)
 

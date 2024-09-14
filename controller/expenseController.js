@@ -1,4 +1,6 @@
-const { User, Expense } = require("../relations/Relation");
+// const { User, Expense } = require("../relations/Relation");
+const User = require("../models/User");
+const Expense = require("../models/Expense");
 const sequelize = require("../config/database");
 const { Parser } = require('json2csv');
 const AWSService = require('../services/awsService');
@@ -135,4 +137,3 @@ exports.downloadExpenses = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-

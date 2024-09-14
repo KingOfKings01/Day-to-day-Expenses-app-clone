@@ -1,4 +1,5 @@
-const { User } = require("../relations/Relation");
+// const { User } = require("../relations/Relation");
+const User = require('../models/User');
 
 exports.verifyToken = async (req, res, next) => {
   try {

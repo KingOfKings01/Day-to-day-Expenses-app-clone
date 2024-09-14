@@ -1,20 +1,41 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../config/database");
+const mongoose = require("mongoose");
 
-const Order = sequelize.define("Order", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
+const Schema = mongoose.Schema;
+
+const orderSchema = new Schema({
+  //Todo: Razarpay Id
   order_id: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   status: {
-    type: DataTypes.STRING,
+    type: String,
     default: "pending",
   },
-});
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+})
 
-module.exports = Order;
+// const { DataTypes } = require("sequelize");
+// const sequelize = require("../config/database");
+
+// const Order = sequelize.define("Order", {
+//   id: {
+//     type: DataTypes.INTEGER,
+//     primaryKey: true,
+//     autoIncrement: true,
+//   },
+//   order_id: {
+//     type: DataTypes.STRING,
+//     allowNull: false,
+//   },
+//   status: {
+//     type: DataTypes.STRING,
+//     default: "pending",
+//   },
+// });
+
+// module.exports = Order;

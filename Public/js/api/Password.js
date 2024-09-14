@@ -1,7 +1,7 @@
 async function forgotPassword(email) {
   // backend will send email for password reset
   try {
-    await axios.post("http://13.233.70.44/password/forgot-password", {
+    await axios.post("http://localhost:4000/password/forgot-password", {
       email,
     });
   } catch (err) {

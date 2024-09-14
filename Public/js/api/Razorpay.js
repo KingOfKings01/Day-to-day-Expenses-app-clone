@@ -1,7 +1,7 @@
 async function Buy(token) {
   try {
     const response = await axios.post(
-      "http://13.233.70.44/user/buy-premium",
+      "http://localhost:4000/user/buy-premium",
       {},
       {
         headers: {
@@ -20,7 +20,7 @@ async function Buy(token) {
 
 async function orderHandler(data, token) {
   try {
-    await axios.post("http://13.233.70.44/user/update-order", data, {
+    await axios.post("http://localhost:4000/user/update-order", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

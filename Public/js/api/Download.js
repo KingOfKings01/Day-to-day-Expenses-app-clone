@@ -1,6 +1,6 @@
 async function downloadingReportApi(token) {
   try {
-    const response = await axios.get("http://13.233.70.44/expense/download", {
+    const response = await axios.get("http://localhost:4000/expense/download", {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data.fileUrl;
@@ -14,7 +14,7 @@ async function downloadingReportApi(token) {
 
 async function downloadHistoryApi(token) {
   try {
-    await axios.get("http://13.233.70.44/user/download-history", {
+    await axios.get("http://localhost:4000/user/download-history", {
       headers: { Authorization: `Bearer ${token}` },
     });
   } catch (err) {

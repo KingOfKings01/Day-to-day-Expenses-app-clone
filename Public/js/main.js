@@ -75,12 +75,12 @@ async function numberOfPages() {
   const selectElement = document.getElementById("number-of-page");
   const selectedValue = selectElement.value;
   localStorage.setItem("numberOfPages", selectedValue);
-
+  console.log("object: " + selectedValue);
   await loadExpenses();
 }
 
 async function loadExpenses(page) {
-  if (page < 1 || page > totalPages) return;
+  
   const token = JSON.parse(localStorage.getItem("token"));
   try {
     const { expenses, pagination } = await fetchUserExpenses(
@@ -102,6 +102,9 @@ async function loadExpenses(page) {
 
 function displayExpenses(expenses) {
   const table = document.getElementById("expensesTableBody");
+  //todo: Reset the table
+  table.innerHTML = ""
+
   let rows = "";
   if (expenses?.length === 0) {
     rows = "<tr><td colspan='5'>No Expenses</td></tr>";
@@ -189,7 +192,6 @@ async function deleteExpense(id) {
   const token = JSON.parse(localStorage.getItem("token"));
   try {
     await deletingExpense(token, id);
-
     loadExpenses(); // TODO: Reload expenses
   } catch (err) {
     messenger(err.message, false);

@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     element.addEventListener('submit', handleAuthorization);
 })
 
-
 async function handleAuthorization(event) {
   event.preventDefault();
   const username = document.getElementById("username")?.value;

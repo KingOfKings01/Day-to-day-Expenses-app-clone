@@ -3,7 +3,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
-const sequelize = require("./config/database");
+// const sequelize = require("./config/database");
 
 const userRoutes = require("./routes/userRouter");
 const expenseRoutes = require("./routes/expenseRouter");
@@ -40,9 +40,13 @@ app.get('*', (req, res) => {
   }
 });
 
+
 // Database Sync
 async function initializeDatabase() {
-  await sequelize.sync({ force: false });
+  // await sequelize.sync({ force: false });
+  
+  const URL = process.env.MONGODB_SERVER_URL
+  await mongoose.connect(URL)
 }
 
 initializeDatabase();

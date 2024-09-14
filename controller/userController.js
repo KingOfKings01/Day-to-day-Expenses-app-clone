@@ -1,4 +1,7 @@
-const { User, Order, Downloaded } = require("../relations/Relation");
+// const { User, Order, Downloaded } = require("../relations/Relation");
+const User = require("../models/User");
+const Order = require("../models/Order");
+const Downloaded = require("../models/Downloaded");
 const PaymentService = require("../services/paymentService");
 
 // Create a new User
@@ -99,15 +102,6 @@ exports.buyPremium = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
-  console.log();
-  console.log();
-  console.log();
-  console.log();
-  console.log("Request to update order");
-  console.log();
-  console.log();
-  console.log();
-  console.log();
   const { order_id, status } = req.body;
   try {
     const order = await Order.findOne({ where: { order_id } });
